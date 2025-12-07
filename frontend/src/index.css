@@ -1,0 +1,194 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Cyber Neon Colors - Light Mode */
+  --bg-primary: #0a0e0f;
+  --bg-secondary: #0f1419;
+  --bg-tertiary: #1a1f26;
+  --text-primary: #e0ffe0;
+  --text-secondary: #a0d9a0;
+  --text-tertiary: #6b8e6b;
+  --border-color: rgba(57, 255, 20, 0.2);
+  --shadow: rgba(0, 0, 0, 0.8);
+
+  /* Neon Accent Colors */
+  --neon-green: #39ff14;
+  --viper-green: #00ff41;
+  --cyber-gold: #FFD700;
+  --electric-yellow: #FFEA00;
+  --accent-primary: var(--viper-green);
+  --accent-secondary: var(--cyber-gold);
+  --accent-gradient: linear-gradient(135deg, #39ff14 0%, #FFD700 50%, #00ff41 100%);
+  --accent-glow: rgba(57, 255, 20, 0.4);
+  --gold-glow: rgba(255, 215, 0, 0.4);
+}
+
+[data-theme="light"] {
+  /* Light Cyber Theme - Better Contrast */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-tertiary: #e8e8e8;
+  --text-primary: #1a1a1a;
+  --text-secondary: #404040;
+  --text-tertiary: #707070;
+  --border-color: rgba(0, 100, 0, 0.2);
+  --shadow: rgba(0, 0, 0, 0.1);
+
+  /* Dark Accent Colors for Light Mode */
+  --neon-green: #006400;
+  --viper-green: #008000;
+  --cyber-gold: #d97706;
+  --electric-yellow: #ea580c;
+  --accent-primary: #008000;
+  --accent-secondary: #d97706;
+  --accent-gradient: linear-gradient(135deg, #006400 0%, #d97706 50%, #008000 100%);
+  --accent-glow: rgba(0, 100, 0, 0.25);
+  --gold-glow: rgba(217, 119, 6, 0.25);
+}
+
+@keyframes cosmicShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes stars {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-100px) rotate(360deg);
+  }
+}
+
+@keyframes pulse-green {
+  0%, 100% {
+    box-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow);
+  }
+  50% {
+    box-shadow: 0 0 40px var(--accent-glow), 0 0 80px var(--accent-glow);
+  }
+}
+
+body {
+  font-family: 'Orbitron', 'Rajdhani', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background 0.3s ease, color 0.3s ease;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Cosmic Background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(ellipse at top, rgba(57, 255, 20, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 20% 80%, rgba(0, 255, 65, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 234, 0, 0.05) 0%, transparent 50%);
+  z-index: -2;
+  animation: cosmicShift 20s ease infinite;
+  background-size: 200% 200%;
+}
+
+/* Helix DNA Pattern */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 50px,
+      rgba(57, 255, 20, 0.03) 50px,
+      rgba(57, 255, 20, 0.03) 52px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 50px,
+      rgba(255, 215, 0, 0.03) 50px,
+      rgba(255, 215, 0, 0.03) 52px
+    );
+  z-index: -1;
+  opacity: 0.3;
+  animation: stars 60s linear infinite;
+}
+
+[data-theme="light"] body::before {
+  background:
+    radial-gradient(ellipse at top, rgba(0, 128, 0, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(217, 119, 6, 0.08) 0%, transparent 50%);
+}
+
+[data-theme="light"] body::after {
+  opacity: 0.08;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 50px,
+      rgba(0, 100, 0, 0.05) 50px,
+      rgba(0, 100, 0, 0.05) 52px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 50px,
+      rgba(217, 119, 6, 0.05) 50px,
+      rgba(217, 119, 6, 0.05) 52px
+    );
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Cyber Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--viper-green) 0%, var(--cyber-gold) 100%);
+  border-radius: 5px;
+  border: 1px solid rgba(57, 255, 20, 0.3);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  box-shadow: 0 0 20px var(--accent-glow), 0 0 30px var(--gold-glow);
+  animation: pulse-green 1s ease-in-out infinite;
+}
+
+/* Neon Selection */
+::selection {
+  background: var(--viper-green);
+  color: #000;
+  text-shadow: 0 0 10px var(--viper-green);
+}
