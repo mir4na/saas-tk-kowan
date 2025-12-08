@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1765215920488" clover="3.2.0">
-  <project timestamp="1765215920488" name="All files">
-    <metrics statements="237" coveredstatements="28" conditionals="95" coveredconditionals="5" methods="65" coveredmethods="4" elements="397" coveredelements="37" complexity="0" loc="237" ncloc="237" packages="4" files="8" classes="8"/>
+<coverage generated="1765231183658" clover="3.2.0">
+  <project timestamp="1765231183658" name="All files">
+    <metrics statements="260" coveredstatements="35" conditionals="115" coveredconditionals="7" methods="69" coveredmethods="5" elements="444" coveredelements="47" complexity="0" loc="260" ncloc="260" packages="5" files="10" classes="10"/>
     <package name="src">
       <metrics statements="13" coveredstatements="0" conditionals="8" coveredconditionals="0" methods="3" coveredmethods="0"/>
       <file name="App.js" path="/home/mirananightfall/project/saas-tk-kowan/frontend/src/App.js">
@@ -24,34 +24,47 @@
         <line num="7" count="0" type="stmt"/>
       </file>
     </package>
-    <package name="src.contexts">
-      <metrics statements="46" coveredstatements="19" conditionals="6" coveredconditionals="3" methods="7" coveredmethods="3"/>
-      <file name="AuthContext.js" path="/home/mirananightfall/project/saas-tk-kowan/frontend/src/contexts/AuthContext.js">
-        <metrics statements="46" coveredstatements="19" conditionals="6" coveredconditionals="3" methods="7" coveredmethods="3"/>
-        <line num="4" count="1" type="stmt"/>
-        <line num="6" count="1" type="stmt"/>
-        <line num="7" count="4" type="stmt"/>
-        <line num="8" count="4" type="cond" truecount="1" falsecount="1"/>
+    <package name="src.components">
+      <metrics statements="7" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="2" coveredmethods="0"/>
+      <file name="Navbar.js" path="/home/mirananightfall/project/saas-tk-kowan/frontend/src/components/Navbar.js">
+        <metrics statements="7" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
         <line num="9" count="0" type="stmt"/>
-        <line num="11" count="4" type="stmt"/>
-        <line num="14" count="1" type="stmt"/>
-        <line num="15" count="4" type="stmt"/>
-        <line num="16" count="4" type="stmt"/>
-        <line num="17" count="4" type="stmt"/>
-        <line num="19" count="4" type="cond" truecount="1" falsecount="1"/>
-        <line num="21" count="4" type="stmt"/>
-        <line num="22" count="2" type="cond" truecount="1" falsecount="1"/>
-        <line num="23" count="0" type="stmt"/>
-        <line num="24" count="0" type="stmt"/>
-        <line num="26" count="2" type="stmt"/>
-        <line num="30" count="4" type="stmt"/>
-        <line num="31" count="0" type="stmt"/>
-        <line num="32" count="0" type="stmt"/>
-        <line num="33" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.contexts">
+      <metrics statements="46" coveredstatements="26" conditionals="6" coveredconditionals="5" methods="7" coveredmethods="4"/>
+      <file name="AuthContext.js" path="/home/mirananightfall/project/saas-tk-kowan/frontend/src/contexts/AuthContext.js">
+        <metrics statements="46" coveredstatements="26" conditionals="6" coveredconditionals="5" methods="7" coveredmethods="4"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="15" type="stmt"/>
+        <line num="8" count="14" type="cond" truecount="2" falsecount="0"/>
+        <line num="9" count="4" type="stmt"/>
+        <line num="11" count="10" type="stmt"/>
+        <line num="14" count="2" type="stmt"/>
+        <line num="15" count="10" type="stmt"/>
+        <line num="16" count="10" type="stmt"/>
+        <line num="17" count="10" type="stmt"/>
+        <line num="19" count="10" type="cond" truecount="1" falsecount="1"/>
+        <line num="21" count="10" type="stmt"/>
+        <line num="22" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="23" count="2" type="stmt"/>
+        <line num="24" count="2" type="stmt"/>
+        <line num="26" count="3" type="stmt"/>
+        <line num="30" count="10" type="stmt"/>
+        <line num="31" count="2" type="stmt"/>
+        <line num="32" count="2" type="stmt"/>
+        <line num="33" count="2" type="stmt"/>
         <line num="35" count="0" type="stmt"/>
         <line num="36" count="0" type="stmt"/>
-        <line num="38" count="0" type="stmt"/>
-        <line num="42" count="4" type="stmt"/>
+        <line num="38" count="2" type="stmt"/>
+        <line num="42" count="10" type="stmt"/>
         <line num="43" count="0" type="stmt"/>
         <line num="44" count="0" type="stmt"/>
         <line num="46" count="0" type="stmt"/>
@@ -59,7 +72,7 @@
         <line num="49" count="0" type="stmt"/>
         <line num="50" count="0" type="stmt"/>
         <line num="52" count="0" type="stmt"/>
-        <line num="55" count="4" type="stmt"/>
+        <line num="55" count="10" type="stmt"/>
         <line num="56" count="0" type="stmt"/>
         <line num="62" count="0" type="stmt"/>
         <line num="64" count="0" type="stmt"/>
@@ -67,44 +80,63 @@
         <line num="67" count="0" type="stmt"/>
         <line num="68" count="0" type="stmt"/>
         <line num="70" count="0" type="stmt"/>
-        <line num="73" count="4" type="stmt"/>
+        <line num="73" count="10" type="stmt"/>
         <line num="74" count="0" type="stmt"/>
         <line num="75" count="0" type="stmt"/>
         <line num="76" count="0" type="stmt"/>
         <line num="77" count="0" type="stmt"/>
-        <line num="80" count="4" type="stmt"/>
-        <line num="89" count="4" type="stmt"/>
+        <line num="80" count="10" type="stmt"/>
+        <line num="89" count="10" type="stmt"/>
       </file>
     </package>
     <package name="src.pages">
-      <metrics statements="160" coveredstatements="9" conditionals="77" coveredconditionals="2" methods="45" coveredmethods="1"/>
+      <metrics statements="176" coveredstatements="9" conditionals="95" coveredconditionals="2" methods="47" coveredmethods="1"/>
+      <file name="Dashboard.js" path="/home/mirananightfall/project/saas-tk-kowan/frontend/src/pages/Dashboard.js">
+        <metrics statements="20" coveredstatements="0" conditionals="18" coveredconditionals="0" methods="5" coveredmethods="0"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="34" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="35" count="0" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="73" count="0" type="stmt"/>
+        <line num="91" count="0" type="stmt"/>
+        <line num="122" count="0" type="stmt"/>
+      </file>
       <file name="Landing.js" path="/home/mirananightfall/project/saas-tk-kowan/frontend/src/pages/Landing.js">
-        <metrics statements="25" coveredstatements="0" conditionals="14" coveredconditionals="0" methods="11" coveredmethods="0"/>
+        <metrics statements="21" coveredstatements="0" conditionals="14" coveredconditionals="0" methods="8" coveredmethods="0"/>
         <line num="6" count="0" type="stmt"/>
         <line num="7" count="0" type="stmt"/>
         <line num="8" count="0" type="stmt"/>
         <line num="9" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="10" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
         <line num="13" count="0" type="stmt"/>
         <line num="14" count="0" type="stmt"/>
-        <line num="15" count="0" type="stmt"/>
-        <line num="18" count="0" type="stmt"/>
-        <line num="19" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="22" count="0" type="stmt"/>
-        <line num="23" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="24" count="0" type="stmt"/>
-        <line num="26" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="18" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="21" count="0" type="stmt"/>
+        <line num="22" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="29" count="0" type="stmt"/>
         <line num="30" count="0" type="stmt"/>
-        <line num="31" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
         <line num="34" count="0" type="stmt"/>
-        <line num="35" count="0" type="stmt"/>
+        <line num="37" count="0" type="stmt"/>
         <line num="38" count="0" type="stmt"/>
         <line num="39" count="0" type="stmt"/>
-        <line num="40" count="0" type="stmt"/>
-        <line num="43" count="0" type="stmt"/>
-        <line num="158" count="0" type="stmt"/>
-        <line num="159" count="0" type="stmt"/>
-        <line num="169" count="0" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
       </file>
       <file name="Login.js" path="/home/mirananightfall/project/saas-tk-kowan/frontend/src/pages/Login.js">
         <metrics statements="19" coveredstatements="9" conditionals="6" coveredconditionals="2" methods="4" coveredmethods="1"/>
