@@ -9,7 +9,6 @@ const api = axios.create({
   }
 });
 
-// Add token to requests
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -21,14 +20,12 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Auth API
 export const authAPI = {
   register: (data) => api.post('/auth/register', data),
   login: (data) => api.post('/auth/login', data),
   getMe: () => api.get('/auth/me'),
 };
 
-// Notes API
 export const notesAPI = {
   getAll: () => api.get('/notes'),
   getOne: (id) => api.get(`/notes/${id}`),

@@ -1,17 +1,16 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-// Support both DATABASE_URL (for Neon DB, Heroku, etc.) and individual credentials
 const pool = new Pool(
   process.env.DATABASE_URL
     ? {
         connectionString: process.env.DATABASE_URL,
         ssl: {
-          rejectUnauthorized: false, // Required for Neon DB and most cloud providers
+          rejectUnauthorized: false,
         },
         max: 20,
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 10000, // Increased to 10 seconds
+        connectionTimeoutMillis: 10000,
       }
     : {
         host: process.env.DB_HOST,

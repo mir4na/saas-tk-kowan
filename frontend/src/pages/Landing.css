@@ -912,3 +912,214 @@
     transform: translateY(0);
   }
 }
+
+/* ============ POPUP CONFIRMATION ============ */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.popup-container {
+  background: var(--bg-secondary);
+  border-radius: 20px;
+  border: 2px solid var(--border-color);
+  box-shadow:
+    0 0 60px rgba(57, 255, 20, 0.3),
+    0 0 120px rgba(255, 215, 0, 0.2),
+    inset 0 0 40px rgba(57, 255, 20, 0.05);
+  max-width: 500px;
+  width: 90%;
+  animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  position: relative;
+  overflow: hidden;
+}
+
+.popup-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg,
+    var(--viper-green),
+    var(--cyber-gold),
+    var(--viper-green)
+  );
+  animation: gradientShift 3s ease infinite;
+  background-size: 200% 100%;
+  box-shadow: 0 0 20px var(--viper-green);
+}
+
+.popup-header {
+  padding: 32px 36px 24px;
+  border-bottom: 2px solid var(--border-color);
+  position: relative;
+}
+
+.popup-header h3 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 900;
+  font-family: 'Orbitron', monospace;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--viper-green) 0%, var(--cyber-gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+}
+
+.popup-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-close:hover {
+  background: #ff0844;
+  border-color: #ff0844;
+  color: #fff;
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 0 20px rgba(255, 8, 68, 0.5);
+}
+
+.popup-content {
+  padding: 36px;
+  text-align: center;
+}
+
+.popup-content p {
+  margin: 0;
+  font-size: 18px;
+  color: var(--text-primary);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  line-height: 1.6;
+}
+
+.popup-actions {
+  padding: 24px 36px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.popup-btn {
+  padding: 16px 32px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  font-family: 'Orbitron', monospace;
+  position: relative;
+  overflow: hidden;
+}
+
+.popup-btn-primary {
+  background: linear-gradient(135deg, var(--viper-green) 0%, var(--cyber-gold) 100%);
+  color: #000;
+  border: 2px solid var(--viper-green);
+  box-shadow: 0 0 20px rgba(57, 255, 20, 0.4);
+}
+
+.popup-btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.popup-btn-primary:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.popup-btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 0 40px rgba(57, 255, 20, 0.6),
+    0 0 80px rgba(255, 215, 0, 0.4);
+}
+
+.popup-btn-secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+}
+
+.popup-btn-secondary:hover {
+  background: var(--bg-primary);
+  border-color: var(--viper-green);
+  transform: translateY(-3px);
+  box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+}
+
+/* Responsive for popup */
+@media (max-width: 480px) {
+  .popup-header {
+    padding: 24px 24px 20px;
+  }
+
+  .popup-header h3 {
+    font-size: 22px;
+  }
+
+  .popup-content {
+    padding: 28px 24px;
+  }
+
+  .popup-content p {
+    font-size: 16px;
+  }
+
+  .popup-actions {
+    padding: 20px 24px 28px;
+  }
+
+  .popup-btn {
+    padding: 14px 24px;
+    font-size: 13px;
+  }
+}

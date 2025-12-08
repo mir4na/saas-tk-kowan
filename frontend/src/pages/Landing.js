@@ -7,8 +7,8 @@ const Landing = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+  const [showLoginConfirmation, setShowLoginConfirmation] = useState(false);
 
-  // Apply theme
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
@@ -22,8 +22,21 @@ const Landing = () => {
     if (user) {
       navigate('/notes');
     } else {
-      navigate('/login');
+      setShowLoginConfirmation(true);
     }
+  };
+
+  const handleConfirmLogin = (hasAccount) => {
+    setShowLoginConfirmation(false);
+    if (hasAccount) {
+      navigate('/login');
+    } else {
+      navigate('/register');
+    }
+  };
+
+  const closeConfirmation = () => {
+    setShowLoginConfirmation(false);
   };
 
   const goToLogin = () => {
@@ -92,11 +105,6 @@ const Landing = () => {
             <button onClick={handleGetStarted} className="btn-get-started">
               Get Started
             </button>
-            {!user && (
-              <button onClick={goToLogin} className="btn-learn-more">
-                Sign In
-              </button>
-            )}
           </div>
 
           <div className="stats-row">
@@ -165,6 +173,37 @@ const Landing = () => {
       <div className="landing-footer">
         <p>&copy; 2025 NOTTU. All rights reserved.</p>
       </div>
+
+      {/* Login Confirmation Popup */}
+      {showLoginConfirmation && (
+        <div className="popup-overlay" onClick={closeConfirmation}>
+          <div className="popup-container" onClick={(e) => e.stopPropagation()}>
+            <div className="popup-header">
+              <h3>Welcome to NOTTU!</h3>
+              <button className="popup-close" onClick={closeConfirmation}>
+                ✕
+              </button>
+            </div>
+            <div className="popup-content">
+              <p>Do you already have an account?</p>
+            </div>
+            <div className="popup-actions">
+              <button
+                className="popup-btn popup-btn-primary"
+                onClick={() => handleConfirmLogin(true)}
+              >
+                Yes, I have an account
+              </button>
+              <button
+                className="popup-btn popup-btn-secondary"
+                onClick={() => handleConfirmLogin(false)}
+              >
+                No, create new account
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

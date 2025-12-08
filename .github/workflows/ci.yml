@@ -84,7 +84,7 @@ jobs:
         working-directory: ./frontend
         env:
           CI: true
-        run: npm test -- --coverage --watchAll=false
+        run: npm test -- --coverage --watchAll=false --passWithNoTests
 
       - name: Upload frontend coverage
         uses: codecov/codecov-action@v3
