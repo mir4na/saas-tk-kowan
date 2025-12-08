@@ -6,7 +6,6 @@ require('dotenv').config();
 
 const app = express();
 
-// Middleware
 app.use(helmet());
 app.use(cors({
   origin: process.env.CORS_ORIGIN || '*',
@@ -16,7 +15,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
-// Health check endpoint
 app.get('/health', (req, res) => {
   res.json({
     success: true,
@@ -26,11 +24,9 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/notes', require('./routes/notes'));
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -38,7 +34,6 @@ app.use((req, res) => {
   });
 });
 
-// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(err.status || 500).json({
@@ -51,17 +46,7 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`
-╔══════════════════════════════════════════╗
-║                                          ║
-║   📝 Notepad SaaS API Server Running     ║
-║                                          ║
-║   Port: ${PORT}                           ║
-║   Environment: ${process.env.NODE_ENV || 'development'}              ║
-║   URL: http://localhost:${PORT}            ║
-║                                          ║
-╚══════════════════════════════════════════╝
-  `);
+  console.log(`server started`);
 });
 
 module.exports = app;

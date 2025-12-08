@@ -2,19 +2,16 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/database');
 
-// Generate JWT Token
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE
   });
 };
 
-// Register new user (simplified - no organization)
 const register = async (req, res) => {
   try {
     const { email, password, name } = req.body;
 
-    // Validation
     if (!email || !password || !name) {
       return res.status(400).json({
         success: false,
@@ -22,7 +19,6 @@ const register = async (req, res) => {
       });
     }
 
-    // Check if email already exists
     const existingUser = await pool.query(
       'SELECT id FROM users WHERE email = $1',
       [email]
@@ -35,10 +31,8 @@ const register = async (req, res) => {
       });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
     const userResult = await pool.query(
       `INSERT INTO users (email, password, name)
        VALUES ($1, $2, $3)
@@ -48,7 +42,6 @@ const register = async (req, res) => {
 
     const user = userResult.rows[0];
 
-    // Generate token
     const token = generateToken(user.id);
 
     res.status(201).json({
@@ -73,12 +66,10 @@ const register = async (req, res) => {
   }
 };
 
-// Login user
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validation
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -86,7 +77,6 @@ const login = async (req, res) => {
       });
     }
 
-    // Get user
     const result = await pool.query(
       'SELECT id, email, password, name FROM users WHERE email = $1',
       [email]
@@ -101,7 +91,6 @@ const login = async (req, res) => {
 
     const user = result.rows[0];
 
-    // Check password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -111,7 +100,6 @@ const login = async (req, res) => {
       });
     }
 
-    // Generate token
     const token = generateToken(user.id);
 
     res.json({
@@ -136,7 +124,6 @@ const login = async (req, res) => {
   }
 };
 
-// Get current user
 const getMe = async (req, res) => {
   try {
     const result = await pool.query(

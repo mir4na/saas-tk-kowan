@@ -3,7 +3,6 @@ const pool = require('../config/database');
 
 const authenticate = async (req, res, next) => {
   try {
-    // Get token from header
     const token = req.header('Authorization')?.replace('Bearer ', '');
 
     if (!token) {
@@ -13,10 +12,8 @@ const authenticate = async (req, res, next) => {
       });
     }
 
-    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Get user from database (simplified schema)
     const result = await pool.query(
       'SELECT id, email, name FROM users WHERE id = $1',
       [decoded.userId]
@@ -29,7 +26,6 @@ const authenticate = async (req, res, next) => {
       });
     }
 
-    // Attach user to request
     req.user = result.rows[0];
 
     next();

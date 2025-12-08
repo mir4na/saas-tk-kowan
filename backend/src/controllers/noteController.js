@@ -1,6 +1,5 @@
 const pool = require('../config/database');
 
-// Get all notes for logged in user
 exports.getNotes = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -20,7 +19,6 @@ exports.getNotes = async (req, res) => {
   }
 };
 
-// Get single note
 exports.getNote = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -45,7 +43,6 @@ exports.getNote = async (req, res) => {
   }
 };
 
-// Create new note
 exports.createNote = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -66,7 +63,6 @@ exports.createNote = async (req, res) => {
   }
 };
 
-// Update note (for autosave)
 exports.updateNote = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -92,7 +88,6 @@ exports.updateNote = async (req, res) => {
   }
 };
 
-// Delete note
 exports.deleteNote = async (req, res) => {
   try {
     const userId = req.user.id;
