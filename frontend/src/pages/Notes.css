@@ -82,7 +82,6 @@
   position: relative;
 }
 
-.btn-back-landing,
 .theme-toggle {
   width: 44px;
   height: 44px;
@@ -99,11 +98,32 @@
   box-shadow: 0 0 5px rgba(57, 255, 20, 0.2);
 }
 
+.btn-back-landing {
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 0 5px rgba(57, 255, 20, 0.2);
+  text-transform: uppercase;
+  font-family: 'Orbitron', monospace;
+}
+
 .btn-back-landing:hover {
-  transform: scale(1.08);
+  transform: translateY(-2px);
   background: var(--cyber-gold);
   color: #000;
   border-color: var(--cyber-gold);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
 }
 
 .theme-toggle:hover {
@@ -586,12 +606,12 @@
 
 /* ============ THEME SPECIFIC ============ */
 [data-theme="light"] .notes-sidebar {
-  box-shadow: 2px 0 8px rgba(59, 130, 246, 0.08);
-  border-right-color: rgba(59, 130, 246, 0.2);
+  box-shadow: 2px 0 8px rgba(249, 115, 22, 0.08);
+  border-right-color: rgba(249, 115, 22, 0.2);
 }
 
 [data-theme="light"] .note-item.active {
-  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 2px 12px rgba(249, 115, 22, 0.2);
 }
 
 [data-theme="light"] .editor-header {

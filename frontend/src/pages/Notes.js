@@ -162,9 +162,6 @@ const Notes = () => {
         <div className="sidebar-header">
           <h2>📝 NOTTU</h2>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <button onClick={handleBackToLanding} className="btn-back-landing" title="Back to Home">
-              🏠
-            </button>
             <button onClick={toggleTheme} className="theme-toggle" title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>
               {theme === 'light' ? '🌙' : '☀️'}
             </button>
@@ -200,6 +197,9 @@ const Notes = () => {
           <div className="user-info">
             <span>{user?.name}</span>
           </div>
+          <button onClick={handleBackToLanding} className="btn-back-landing" title="Back to Home" style={{ width: '100%', marginTop: '12px' }}>
+            🏠 Back to Landing
+          </button>
         </div>
       </div>
 
