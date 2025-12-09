@@ -28,26 +28,26 @@
 }
 
 [data-theme="light"] {
-  /* Light Cyber Theme - Softer & More Attractive */
-  --bg-primary: #f8faf9;
-  --bg-secondary: #eef5f0;
-  --bg-tertiary: #e1ebe5;
-  --text-primary: #1e3a2e;
-  --text-secondary: #2d5a47;
-  --text-tertiary: #5a8270;
-  --border-color: rgba(46, 125, 50, 0.25);
-  --shadow: rgba(30, 58, 46, 0.12);
+  /* Light Blue & White Theme - Clean & Modern */
+  --bg-primary: #f8f9fc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e8eef7;
+  --text-primary: #1e293b;
+  --text-secondary: #334155;
+  --text-tertiary: #64748b;
+  --border-color: rgba(59, 130, 246, 0.2);
+  --shadow: rgba(30, 41, 59, 0.08);
 
-  /* Vibrant Accent Colors for Light Mode */
-  --neon-green: #2e7d32;
-  --viper-green: #388e3c;
-  --cyber-gold: #f57c00;
-  --electric-yellow: #fb8c00;
-  --accent-primary: #2e7d32;
-  --accent-secondary: #f57c00;
-  --accent-gradient: linear-gradient(135deg, #2e7d32 0%, #f57c00 50%, #43a047 100%);
-  --accent-glow: rgba(46, 125, 50, 0.35);
-  --gold-glow: rgba(245, 124, 0, 0.35);
+  /* Blue & White Accent Colors for Light Mode */
+  --neon-green: #3b82f6;
+  --viper-green: #2563eb;
+  --cyber-gold: #60a5fa;
+  --electric-yellow: #93c5fd;
+  --accent-primary: #3b82f6;
+  --accent-secondary: #60a5fa;
+  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #60a5fa 50%, #2563eb 100%);
+  --accent-glow: rgba(59, 130, 246, 0.3);
+  --gold-glow: rgba(96, 165, 250, 0.3);
 }
 
 @keyframes cosmicShift {
@@ -88,7 +88,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Cosmic Background */
+/* Cosmic Background - Simplified for performance */
 body::before {
   content: '';
   position: fixed;
@@ -97,16 +97,13 @@ body::before {
   width: 100%;
   height: 100%;
   background:
-    radial-gradient(ellipse at top, rgba(57, 255, 20, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at bottom, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 20% 80%, rgba(0, 255, 65, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 234, 0, 0.05) 0%, transparent 50%);
+    radial-gradient(ellipse at top, rgba(57, 255, 20, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(255, 215, 0, 0.06) 0%, transparent 50%);
   z-index: -2;
-  animation: cosmicShift 20s ease infinite;
-  background-size: 200% 200%;
+  opacity: 0.8;
 }
 
-/* Helix DNA Pattern */
+/* Helix DNA Pattern - Simplified for performance */
 body::after {
   content: '';
   position: fixed;
@@ -119,46 +116,43 @@ body::after {
       45deg,
       transparent,
       transparent 50px,
-      rgba(57, 255, 20, 0.03) 50px,
-      rgba(57, 255, 20, 0.03) 52px
+      rgba(57, 255, 20, 0.02) 50px,
+      rgba(57, 255, 20, 0.02) 52px
     ),
     repeating-linear-gradient(
       -45deg,
       transparent,
       transparent 50px,
-      rgba(255, 215, 0, 0.03) 50px,
-      rgba(255, 215, 0, 0.03) 52px
+      rgba(255, 215, 0, 0.02) 50px,
+      rgba(255, 215, 0, 0.02) 52px
     );
   z-index: -1;
-  opacity: 0.3;
-  animation: stars 60s linear infinite;
+  opacity: 0.2;
 }
 
 [data-theme="light"] body::before {
   background:
-    radial-gradient(ellipse at top left, rgba(46, 125, 50, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at top right, rgba(102, 187, 106, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at bottom, rgba(245, 124, 0, 0.12) 0%, transparent 50%),
-    radial-gradient(circle at 30% 70%, rgba(255, 183, 77, 0.08) 0%, transparent 50%);
-  animation: cosmicShift 25s ease infinite;
+    radial-gradient(ellipse at top, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(96, 165, 250, 0.05) 0%, transparent 50%);
+  opacity: 0.7;
 }
 
 [data-theme="light"] body::after {
-  opacity: 0.12;
+  opacity: 0.05;
   background-image:
     repeating-linear-gradient(
       45deg,
       transparent,
       transparent 50px,
-      rgba(46, 125, 50, 0.08) 50px,
-      rgba(46, 125, 50, 0.08) 52px
+      rgba(59, 130, 246, 0.03) 50px,
+      rgba(59, 130, 246, 0.03) 52px
     ),
     repeating-linear-gradient(
       -45deg,
       transparent,
       transparent 50px,
-      rgba(245, 124, 0, 0.08) 50px,
-      rgba(245, 124, 0, 0.08) 52px
+      rgba(96, 165, 250, 0.03) 50px,
+      rgba(96, 165, 250, 0.03) 52px
     );
 }
 

@@ -6,7 +6,7 @@ import './Notes.css';
 
 const Notes = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [notes, setNotes] = useState([]);
   const [selectedNote, setSelectedNote] = useState(null);
   const [title, setTitle] = useState('');
@@ -31,11 +31,6 @@ const Notes = () => {
   };
 
   const handleBackToLanding = () => {
-    navigate('/');
-  };
-
-  const handleLogout = () => {
-    logout();
     navigate('/');
   };
 
@@ -204,7 +199,6 @@ const Notes = () => {
         <div className="sidebar-footer">
           <div className="user-info">
             <span>{user?.name}</span>
-            <button onClick={handleLogout} className="btn-logout">Logout</button>
           </div>
         </div>
       </div>

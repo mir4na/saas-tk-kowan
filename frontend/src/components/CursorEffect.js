@@ -44,26 +44,26 @@ const CursorEffect = () => {
         ctx.globalAlpha = this.life;
 
         if (isLight) {
-          // Vibrant particles for light mode
-          ctx.shadowBlur = 15;
-          ctx.shadowColor = 'rgba(46, 125, 50, 0.7)';
+          // Blue particles for light mode - reduced blur for performance
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = 'rgba(59, 130, 246, 0.5)';
 
           // Inner circle
           ctx.beginPath();
           ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-          ctx.fillStyle = '#2e7d32';
+          ctx.fillStyle = '#3b82f6';
           ctx.fill();
 
-          // Outer glow
-          ctx.shadowBlur = 25;
-          ctx.shadowColor = 'rgba(245, 124, 0, 0.7)';
+          // Outer glow - simplified
+          ctx.shadowBlur = 12;
+          ctx.shadowColor = 'rgba(96, 165, 250, 0.5)';
           ctx.beginPath();
-          ctx.arc(this.x, this.y, this.size * 1.5, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(245, 124, 0, 0.5)';
+          ctx.arc(this.x, this.y, this.size * 1.3, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(96, 165, 250, 0.3)';
           ctx.fill();
         } else {
-          // Neon glow effect for dark mode
-          ctx.shadowBlur = 15;
+          // Neon glow effect for dark mode - reduced blur for performance
+          ctx.shadowBlur = 10;
           ctx.shadowColor = '#39FF14';
 
           // Inner circle
@@ -72,12 +72,12 @@ const CursorEffect = () => {
           ctx.fillStyle = '#39FF14';
           ctx.fill();
 
-          // Outer glow
-          ctx.shadowBlur = 30;
+          // Outer glow - simplified
+          ctx.shadowBlur = 18;
           ctx.shadowColor = '#FFD700';
           ctx.beginPath();
-          ctx.arc(this.x, this.y, this.size * 1.5, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+          ctx.arc(this.x, this.y, this.size * 1.3, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 215, 0, 0.25)';
           ctx.fill();
         }
 
@@ -88,8 +88,8 @@ const CursorEffect = () => {
     const handleMouseMove = (e) => {
       mouseRef.current = { x: e.clientX, y: e.clientY };
 
-      // Create particles at mouse position
-      for (let i = 0; i < 2; i++) {
+      // Create fewer particles for better performance - only 1 particle per move
+      if (Math.random() > 0.5) { // 50% chance to create particle
         particlesRef.current.push(new Particle(e.clientX, e.clientY));
       }
     };
@@ -109,9 +109,9 @@ const CursorEffect = () => {
         return particle.life > 0;
       });
 
-      // Limit particles for performance
-      if (particlesRef.current.length > 100) {
-        particlesRef.current = particlesRef.current.slice(-100);
+      // Limit particles for performance - reduced to 50
+      if (particlesRef.current.length > 50) {
+        particlesRef.current = particlesRef.current.slice(-50);
       }
 
       rafRef.current = requestAnimationFrame(animate);
