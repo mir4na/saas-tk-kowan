@@ -171,7 +171,7 @@ const Notes = () => {
               🏠
             </button>
             <button onClick={toggleTheme} className="theme-toggle" title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>
-              {theme === 'light' ? '🌙' : '💚'}
+              {theme === 'light' ? '🌙' : '☀️'}
             </button>
             <button onClick={createNewNote} className="btn-new-note">+ NEW</button>
           </div>

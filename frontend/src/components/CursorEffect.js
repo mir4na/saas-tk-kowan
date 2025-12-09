@@ -15,6 +15,9 @@ const CursorEffect = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
+    // Check current theme
+    const getTheme = () => document.documentElement.getAttribute('data-theme') || 'dark';
+
     class Particle {
       constructor(x, y) {
         this.x = x;
@@ -34,26 +37,49 @@ const CursorEffect = () => {
       }
 
       draw(ctx) {
+        const theme = getTheme();
+        const isLight = theme === 'light';
+
         ctx.save();
         ctx.globalAlpha = this.life;
 
-        // Neon glow effect
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = '#39FF14';
+        if (isLight) {
+          // Vibrant particles for light mode
+          ctx.shadowBlur = 15;
+          ctx.shadowColor = 'rgba(46, 125, 50, 0.7)';
 
-        // Inner circle
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = '#39FF14';
-        ctx.fill();
+          // Inner circle
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = '#2e7d32';
+          ctx.fill();
 
-        // Outer glow
-        ctx.shadowBlur = 30;
-        ctx.shadowColor = '#FFD700';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size * 1.5, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
-        ctx.fill();
+          // Outer glow
+          ctx.shadowBlur = 25;
+          ctx.shadowColor = 'rgba(245, 124, 0, 0.7)';
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size * 1.5, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(245, 124, 0, 0.5)';
+          ctx.fill();
+        } else {
+          // Neon glow effect for dark mode
+          ctx.shadowBlur = 15;
+          ctx.shadowColor = '#39FF14';
+
+          // Inner circle
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = '#39FF14';
+          ctx.fill();
+
+          // Outer glow
+          ctx.shadowBlur = 30;
+          ctx.shadowColor = '#FFD700';
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size * 1.5, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+          ctx.fill();
+        }
 
         ctx.restore();
       }

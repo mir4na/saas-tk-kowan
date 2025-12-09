@@ -8,3 +8,7 @@
   z-index: 9999;
   mix-blend-mode: screen;
 }
+
+[data-theme="light"] .cursor-effect-canvas {
+  mix-blend-mode: multiply;
+}
