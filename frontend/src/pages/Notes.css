@@ -1,18 +1,4 @@
-@keyframes neonGlow {
-  0%, 100% {
-    box-shadow:
-      0 0 20px var(--accent-glow),
-      0 0 40px var(--accent-glow),
-      inset 0 0 20px rgba(57, 255, 20, 0.1);
-  }
-  50% {
-    box-shadow:
-      0 0 30px var(--accent-glow),
-      0 0 60px var(--accent-glow),
-      0 0 80px var(--gold-glow),
-      inset 0 0 30px rgba(57, 255, 20, 0.15);
-  }
-}
+/* Removed heavy neonGlow animation for performance */
 
 @keyframes fadeIn {
   from {
@@ -45,28 +31,7 @@
   }
 }
 
-@keyframes scanline {
-  0% {
-    transform: translateY(-100%);
-  }
-  100% {
-    transform: translateY(100%);
-  }
-}
-
-@keyframes textGlow {
-  0%, 100% {
-    text-shadow:
-      0 0 5px var(--viper-green),
-      0 0 10px var(--viper-green);
-  }
-  50% {
-    text-shadow:
-      0 0 10px var(--viper-green),
-      0 0 20px var(--viper-green),
-      0 0 30px var(--cyber-gold);
-  }
-}
+/* Removed scanline and textGlow animations for performance */
 
 .notes-container {
   display: flex;
@@ -76,24 +41,7 @@
   position: relative;
 }
 
-/* Cyber Scanline Effect */
-.notes-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg,
-    transparent,
-    var(--viper-green),
-    transparent
-  );
-  animation: scanline 4s linear infinite;
-  opacity: 0.3;
-  z-index: 999;
-  pointer-events: none;
-}
+/* Scanline effect removed for performance */
 
 /* ============ SIDEBAR ============ */
 .notes-sidebar {
@@ -104,29 +52,10 @@
   flex-direction: column;
   position: relative;
   transition: all 0.3s ease;
-  box-shadow:
-    2px 0 20px rgba(57, 255, 20, 0.1),
-    inset -1px 0 20px rgba(57, 255, 20, 0.05);
+  box-shadow: 2px 0 10px rgba(57, 255, 20, 0.1);
 }
 
-/* Cyber Grid Overlay */
-.notes-sidebar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image:
-    linear-gradient(rgba(57, 255, 20, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(57, 255, 20, 0.03) 1px, transparent 1px);
-  background-size: 20px 20px;
-  pointer-events: none;
-  opacity: 0.5;
-  z-index: 0;
-}
-
-/* Neon Top Border */
+/* Simplified top border for performance */
 .notes-sidebar::after {
   content: '';
   position: absolute;
@@ -134,12 +63,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg,
-    var(--viper-green),
-    var(--cyber-gold),
-    var(--viper-green)
-  );
-  box-shadow: 0 0 20px var(--viper-green);
+  background: var(--viper-green);
   z-index: 1;
 }
 
@@ -165,7 +89,6 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: textGlow 2s ease-in-out infinite;
   position: relative;
 }
 
@@ -179,11 +102,11 @@
   color: var(--text-primary);
   font-size: 20px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+  box-shadow: 0 0 5px rgba(57, 255, 20, 0.2);
 }
 
 .btn-back-landing:hover {
@@ -191,7 +114,7 @@
   background: var(--cyber-gold);
   color: #000;
   border-color: var(--cyber-gold);
-  box-shadow: 0 0 30px var(--gold-glow);
+  box-shadow: 0 0 20px var(--gold-glow);
 }
 
 .theme-toggle:hover {
@@ -199,7 +122,7 @@
   background: var(--viper-green);
   color: #000;
   border-color: var(--viper-green);
-  box-shadow: 0 0 30px var(--accent-glow);
+  box-shadow: 0 0 20px var(--accent-glow);
 }
 
 .btn-new-note {
@@ -212,38 +135,16 @@
   font-weight: 900;
   letter-spacing: 2px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow:
-    0 0 20px rgba(57, 255, 20, 0.3),
-    0 0 40px rgba(255, 215, 0, 0.2);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.25);
   position: relative;
   overflow: hidden;
   font-family: 'Orbitron', monospace;
 }
 
-.btn-new-note::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
-}
-
-.btn-new-note:hover::before {
-  width: 300px;
-  height: 300px;
-}
-
 .btn-new-note:hover {
   transform: translateY(-3px);
-  box-shadow:
-    0 0 30px rgba(57, 255, 20, 0.5),
-    0 0 60px rgba(255, 215, 0, 0.3);
+  box-shadow: 0 0 25px rgba(57, 255, 20, 0.4);
 }
 
 .btn-new-note:active {
@@ -275,7 +176,7 @@
   margin-bottom: 14px;
   border-radius: 16px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
   position: relative;
   border: 2px solid transparent;
   background: var(--bg-primary);
@@ -302,25 +203,18 @@
 .note-item:hover {
   transform: translateX(6px);
   border-color: var(--viper-green);
-  box-shadow:
-    0 4px 20px rgba(57, 255, 20, 0.2),
-    0 0 40px rgba(57, 255, 20, 0.1);
+  box-shadow: 0 4px 15px rgba(57, 255, 20, 0.2);
   background: var(--bg-tertiary);
 }
 
 .note-item.active {
   background: var(--bg-tertiary);
   border-color: var(--viper-green);
-  box-shadow:
-    0 0 30px rgba(57, 255, 20, 0.3),
-    0 0 60px rgba(255, 215, 0, 0.2),
-    inset 0 0 30px rgba(57, 255, 20, 0.05);
-  animation: neonGlow 2s ease-in-out infinite;
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
 }
 
 .note-item.active::before {
   opacity: 1;
-  box-shadow: 0 0 20px var(--viper-green);
 }
 
 .note-item h3 {
@@ -374,9 +268,8 @@
   cursor: pointer;
   opacity: 0;
   transform: scale(0);
-  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transition: opacity 0.3s ease, transform 0.3s ease;
   z-index: 2;
-  box-shadow: 0 0 20px rgba(255, 8, 68, 0.5);
 }
 
 .note-item:hover .btn-delete {
@@ -385,8 +278,7 @@
 }
 
 .btn-delete:hover {
-  transform: scale(1.15) rotate(180deg);
-  box-shadow: 0 0 40px rgba(255, 8, 68, 0.8);
+  transform: scale(1.15);
   background: linear-gradient(135deg, #ff5722 0%, #ff0844 100%);
 }
 
@@ -406,12 +298,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg,
-    var(--viper-green),
-    var(--cyber-gold),
-    var(--viper-green)
-  );
-  box-shadow: 0 0 10px var(--viper-green);
+  background: var(--viper-green);
 }
 
 .user-info {
@@ -466,37 +353,7 @@
   overflow: hidden;
 }
 
-/* Ambient Glow */
-.notes-editor::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  right: -50%;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-  opacity: 0.15;
-  pointer-events: none;
-  animation: pulse 6s ease-in-out infinite;
-  z-index: 0;
-}
-
-/* Cyber Grid */
-.notes-editor::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image:
-    linear-gradient(rgba(57, 255, 20, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(57, 255, 20, 0.02) 1px, transparent 1px);
-  background-size: 30px 30px;
-  pointer-events: none;
-  opacity: 0.3;
-  z-index: 0;
-}
+/* Background effects removed for performance */
 
 .editor-header {
   padding: 28px 44px;
@@ -505,11 +362,10 @@
   justify-content: space-between;
   align-items: center;
   background: var(--bg-secondary);
-  backdrop-filter: blur(10px);
   animation: fadeIn 0.6s ease;
   position: relative;
   z-index: 1;
-  box-shadow: 0 2px 20px rgba(57, 255, 20, 0.1);
+  box-shadow: 0 2px 10px rgba(57, 255, 20, 0.1);
 }
 
 .title-input {
@@ -531,9 +387,7 @@
 }
 
 .title-input:focus {
-  transform: translateX(6px);
   color: var(--viper-green);
-  text-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
 }
 
 .save-status {
@@ -566,7 +420,6 @@
 
 .save-status .saved {
   color: var(--viper-green);
-  text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
 }
 
 .save-status .saved::before {
@@ -647,7 +500,6 @@
   border-right-color: var(--cyber-gold);
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  box-shadow: 0 0 20px var(--accent-glow);
 }
 
 @keyframes spin {
@@ -783,7 +635,6 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -796,13 +647,10 @@
   background: var(--bg-secondary);
   border-radius: 20px;
   border: 2px solid var(--border-color);
-  box-shadow:
-    0 0 60px rgba(57, 255, 20, 0.3),
-    0 0 120px rgba(255, 215, 0, 0.2),
-    inset 0 0 40px rgba(57, 255, 20, 0.05);
+  box-shadow: 0 0 30px rgba(57, 255, 20, 0.3);
   max-width: 480px;
   width: 100%;
-  animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  animation: slideIn 0.3s ease;
   position: relative;
   overflow: hidden;
 }
@@ -825,14 +673,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg,
-    var(--viper-green),
-    var(--cyber-gold),
-    var(--viper-green)
-  );
-  animation: gradientShift 3s ease infinite;
-  background-size: 200% 100%;
-  box-shadow: 0 0 20px var(--viper-green);
+  background: var(--viper-green);
 }
 
 .modal-header {
@@ -875,7 +716,6 @@
   text-transform: uppercase;
   letter-spacing: 1px !important;
   margin-top: 8px !important;
-  text-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
 }
 
 .modal-footer {
@@ -898,8 +738,6 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-transform: uppercase;
   font-family: 'Orbitron', monospace;
-  position: relative;
-  overflow: hidden;
 }
 
 .btn-cancel {
@@ -919,32 +757,10 @@
   background: linear-gradient(135deg, #ff0844 0%, #ff5722 100%);
   color: #fff;
   border: 2px solid #ff0844;
-  box-shadow: 0 0 20px rgba(255, 8, 68, 0.4);
-}
-
-.btn-confirm-delete::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
-}
-
-.btn-confirm-delete:hover::before {
-  width: 300px;
-  height: 300px;
 }
 
 .btn-confirm-delete:hover {
   transform: translateY(-3px);
-  box-shadow:
-    0 0 40px rgba(255, 8, 68, 0.6),
-    0 0 80px rgba(255, 87, 34, 0.4);
 }
 
 .btn-confirm-delete:active {

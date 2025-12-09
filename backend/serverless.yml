@@ -2,21 +2,19 @@ service: nottu-api
 
 provider:
   name: aws
-  runtime: nodejs18.x
-  stage: ${opt:stage, 'dev'}
+  runtime: nodejs20.x
+  stage: api
   region: us-east-1
 
-  # Environment variables
   environment:
     NODE_ENV: production
-    DATABASE_URL: ${env:DATABASE_URL}
-    JWT_SECRET: ${env:JWT_SECRET}
-    JWT_EXPIRE: ${env:JWT_EXPIRE}
-    CORS_ORIGIN: ${env:CORS_ORIGIN}
-    APP_NAME: NOTTU
-    APP_URL: ${env:APP_URL}
+    DATABASE_URL: 'postgresql://neondb_owner:npg_fEJZvrWmu72o@ep-winter-lake-ahhvdp0z-pooler.c-3.us-east-1.aws.neon.tech/kowan?sslmode=require'
+    JWT_SECRET: '60d95f7cd4d19756f0f2c39303b5bec6be5f8739a288bbf3bd96f813d4fb3271'
+    JWT_EXPIRE: '7d'
+    CORS_ORIGIN: '*'
+    APP_NAME: 'NOTTU'
+    APP_URL: 'https://1z2ivt0s87.execute-api.us-east-1.amazonaws.com/api'
 
-  # IAM Role Statements
   iam:
     role:
       statements:
@@ -60,7 +58,6 @@ functions:
               - X-Amz-User-Agent
             allowCredentials: true
 
-# Package configuration
 package:
   exclude:
     - .git/**
@@ -78,8 +75,19 @@ package:
     - package.json
 
 plugins:
+  - serverless-dotenv-plugin
   - serverless-offline
 
 custom:
+  dotenv:
+    path: .env
+    basePath: ./
+    include:
+      - DATABASE_URL
+      - JWT_SECRET
+      - JWT_EXPIRE
+      - CORS_ORIGIN
+      - APP_NAME
+      - APP_URL
   serverless-offline:
     httpPort: 5000

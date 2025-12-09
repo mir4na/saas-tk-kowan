@@ -1,35 +1,43 @@
 {
-  "name": "taskflow-backend",
+  "name": "nottu-backend",
   "version": "1.0.0",
-  "description": "TaskFlow SaaS Backend API",
+  "description": "NOTTU - Note-taking SaaS Backend API",
   "main": "src/server.js",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "migrate": "node src/utils/migrate.js",
     "seed": "node src/utils/seed.js",
-    "test": "echo \"No tests implemented yet\" && exit 0"
+    "test": "echo \"No tests implemented yet\" && exit 0",
+    "deploy": "serverless deploy"
   },
   "keywords": [
     "saas",
-    "task-management",
-    "multi-tenant"
+    "notes",
+    "notepad",
+    "note-taking"
   ],
-  "author": "TaskFlow Team",
+  "author": "NOTTU Team",
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "express-validator": "^7.0.1",
-    "helmet": "^7.1.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "express-validator": "^7.2.1",
+    "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
-    "pg": "^8.11.3",
-    "serverless-http": "^4.0.0"
+    "pg": "^8.13.1",
+    "serverless-http": "^3.2.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.1.9",
+    "serverless": "^3.39.0",
+    "serverless-offline": "^13.8.1",
+    "serverless-dotenv-plugin": "^6.0.0"
   }
 }

@@ -39,12 +39,13 @@ const Notes = () => {
     navigate('/');
   };
 
-  // Load notes on mount
-  useEffect(() => {
-    loadNotes();
+  const selectNote = useCallback((note) => {
+    setSelectedNote(note);
+    setTitle(note.title);
+    setContent(note.content);
   }, []);
 
-  const loadNotes = async () => {
+  const loadNotes = useCallback(async () => {
     try {
       const response = await notesAPI.getAll();
       setNotes(response.data.notes);
@@ -56,27 +57,26 @@ const Notes = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectNote]);
 
-  const selectNote = (note) => {
-    setSelectedNote(note);
-    setTitle(note.title);
-    setContent(note.content);
-  };
+  // Load notes on mount
+  useEffect(() => {
+    loadNotes();
+  }, [loadNotes]);
 
-  const createNewNote = async () => {
+  const createNewNote = useCallback(async () => {
     try {
       const response = await notesAPI.create({
         title: 'Untitled Note',
         content: ''
       });
       const newNote = response.data.note;
-      setNotes([newNote, ...notes]);
+      setNotes(prevNotes => [newNote, ...prevNotes]);
       selectNote(newNote);
     } catch (error) {
       console.error('Error creating note:', error);
     }
-  };
+  }, [selectNote]);
 
   const openDeleteModal = (noteId, e) => {
     if (e) e.stopPropagation();
@@ -124,8 +124,8 @@ const Notes = () => {
         content
       });
 
-      // Update notes list
-      setNotes(notes.map(n =>
+      // Update notes list using functional update to avoid dependency
+      setNotes(prevNotes => prevNotes.map(n =>
         n.id === selectedNote.id ? response.data.note : n
       ));
 
@@ -135,7 +135,7 @@ const Notes = () => {
     } finally {
       setSaving(false);
     }
-  }, [selectedNote, title, content, notes]);
+  }, [selectedNote, title, content]);
 
   // Autosave logic - save 2 seconds after user stops typing
   useEffect(() => {

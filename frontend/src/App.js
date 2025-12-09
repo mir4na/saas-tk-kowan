@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Notes from './pages/Notes';
+import CursorEffect from './components/CursorEffect';
 import './App.css';
 
 // Protected Route Component
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = memo(({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
@@ -20,10 +21,10 @@ const ProtectedRoute = ({ children }) => {
   }
 
   return isAuthenticated ? children : <Navigate to="/login" />;
-};
+});
 
 // Public Route Component (redirect to dashboard if logged in)
-const PublicRoute = ({ children }) => {
+const PublicRoute = memo(({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
@@ -35,13 +36,14 @@ const PublicRoute = ({ children }) => {
   }
 
   return !isAuthenticated ? children : <Navigate to="/notes" />;
-};
+});
 
 function App() {
   return (
     <Router>
       <AuthProvider>
         <div className="App">
+          <CursorEffect />
           <Routes>
             <Route
               path="/login"
