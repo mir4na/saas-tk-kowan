@@ -4,19 +4,17 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Notes from './pages/Notes';
-import Profile from './pages/Profile';
-import CursorEffect from './components/CursorEffect';
+import Dashboard from './pages/Dashboard';
+import Paste from './pages/Paste';
 import './App.css';
 
-// Protected Route Component
 const ProtectedRoute = memo(({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <div className="spinner"></div>
+      <div className="full-center">
+        <div className="spinner" />
       </div>
     );
   }
@@ -24,19 +22,18 @@ const ProtectedRoute = memo(({ children }) => {
   return isAuthenticated ? children : <Navigate to="/login" />;
 });
 
-// Public Route Component (redirect to dashboard if logged in)
 const PublicRoute = memo(({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <div className="spinner"></div>
+      <div className="full-center">
+        <div className="spinner" />
       </div>
     );
   }
 
-  return !isAuthenticated ? children : <Navigate to="/notes" />;
+  return !isAuthenticated ? children : <Navigate to="/dashboard" />;
 });
 
 function App() {
@@ -44,8 +41,8 @@ function App() {
     <Router>
       <AuthProvider>
         <div className="App">
-          <CursorEffect />
           <Routes>
+            <Route path="/" element={<Landing />} />
             <Route
               path="/login"
               element={
@@ -63,22 +60,14 @@ function App() {
               }
             />
             <Route
-              path="/notes"
+              path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <Notes />
+                  <Dashboard />
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/" element={<Landing />} />
+            <Route path="/p/:slug" element={<Paste />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>

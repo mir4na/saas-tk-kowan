@@ -38,7 +38,7 @@ services:
       AWS_S3_BUCKET: ${AWS_S3_BUCKET}
       RP_NAME: ${RP_NAME:-NOTTU}
       RP_ID: ${RP_ID}
-      ORIGIN: ${ORIGIN}
+      ORIGIN: ${ORIGIN:-http://localhost}
     depends_on:
       postgres:
         condition: service_healthy

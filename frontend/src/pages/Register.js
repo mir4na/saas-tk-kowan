@@ -1,76 +1,66 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import './Auth.css';
 
 const Register = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-
   const { register } = useAuth();
   const navigate = useNavigate();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       await register(name, email);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Registration failed. Please try again.');
+      setError('Registration failed. Try a different email or passkey.');
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-container">
+    <div className="auth">
       <div className="auth-card">
-        <h1>📝 NOTTU</h1>
-        <p className="subtitle">Neural Optimal Text Terminal Unit</p>
-
-        {error && <div className="error-message">{error}</div>}
-
+        <h1>Register</h1>
+        <p className="muted">Create an account with your passkey.</p>
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Name</label>
+          <label className="field">
+            <span>Name</span>
             <input
               type="text"
+              required
+              placeholder="Your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Your full name"
-              required
             />
-          </div>
+          </label>
 
-          <div className="form-group">
-            <label>Email</label>
+          <label className="field">
+            <span>Email</span>
             <input
               type="email"
+              required
+              placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              required
             />
-          </div>
+          </label>
 
-          <div className="passkey-info">
-            <p>Passwordless login using passkey</p>
-            <small>You'll use your device's biometric authentication or security key</small>
-          </div>
+          {error && <div className="error">{error}</div>}
 
-          <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Creating passkey...' : 'Sign Up with Passkey'}
+          <button className="primary-btn" type="submit" disabled={loading}>
+            {loading ? 'Creating account...' : 'Register with Passkey'}
           </button>
         </form>
-
-        <p className="auth-footer">
-          Already have an account? <Link to="/login">Sign in</Link>
-        </p>
+        <p className="muted small">Already have an account? <Link to="/login">Login</Link></p>
       </div>
     </div>
   );
