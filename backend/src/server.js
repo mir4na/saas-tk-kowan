@@ -93,9 +93,9 @@ app.post('/debug-request', (req, res) => {
   });
 });
 
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/notes', require('./routes/notes'));
-app.use('/api/profile', require('./routes/profile'));
+app.use('/auth', require('./routes/auth'));
+app.use('/notes', require('./routes/notes'));
+app.use('/profile', require('./routes/profile'));
 
 app.use((req, res) => {
   res.status(404).json({
