@@ -5,7 +5,6 @@ import './Auth.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -18,10 +17,10 @@ const Login = () => {
     setLoading(true);
 
     try {
-      await login(email, password);
+      await login(email);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      setError(err.response?.data?.message || err.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -47,19 +46,13 @@ const Login = () => {
             />
           </div>
 
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-            />
+          <div className="passkey-info">
+            <p>Passwordless login using passkey</p>
+            <small>You'll use your device's biometric authentication or security key</small>
           </div>
 
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'Authenticating...' : 'Sign In with Passkey'}
           </button>
         </form>
 

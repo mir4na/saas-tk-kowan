@@ -1,5 +1,7 @@
 import React, { createContext, useState, useContext, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
+import { authAPI } from '../services/api';
+import { registerWithPasskey, loginWithPasskey } from '../utils/webauthn';
 
 const AuthContext = createContext();
 
@@ -37,27 +39,14 @@ export const AuthProvider = ({ children }) => {
     }
   }, [API_URL, logout]);
 
-  const login = useCallback(async (email, password) => {
-    const response = await axios.post(`${API_URL}/auth/login`, { email, password });
-    const { token, user } = response.data.data;
-
-    localStorage.setItem('token', token);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-    setToken(token);
-    setUser(user);
-
-    return response.data;
-  }, [API_URL]);
-
-  const register = useCallback(async (name, email, password) => {
-    const response = await axios.post(`${API_URL}/auth/register`, {
-      name,
+  const login = useCallback(async (email) => {
+    const response = await loginWithPasskey(
       email,
-      password
-    });
+      authAPI.loginOptions,
+      authAPI.loginVerify
+    );
 
-    const { token, user } = response.data.data;
+    const { token, user } = response.data;
 
     localStorage.setItem('token', token);
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -65,8 +54,27 @@ export const AuthProvider = ({ children }) => {
     setToken(token);
     setUser(user);
 
-    return response.data;
-  }, [API_URL]);
+    return response;
+  }, []);
+
+  const register = useCallback(async (name, email) => {
+    const response = await registerWithPasskey(
+      email,
+      name,
+      authAPI.registerOptions,
+      authAPI.registerVerify
+    );
+
+    const { token, user } = response.data;
+
+    localStorage.setItem('token', token);
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+    setToken(token);
+    setUser(user);
+
+    return response;
+  }, []);
 
   useEffect(() => {
     if (token) {
@@ -77,14 +85,19 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token, fetchUser]);
 
+  const updateUser = useCallback((updatedUser) => {
+    setUser(updatedUser);
+  }, []);
+
   const value = useMemo(() => ({
     user,
     loading,
     login,
     register,
     logout,
+    updateUser,
     isAuthenticated: !!user
-  }), [user, loading, login, register, logout]);
+  }), [user, loading, login, register, logout, updateUser]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -6,7 +6,6 @@ import './Auth.css';
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -19,10 +18,10 @@ const Register = () => {
     setLoading(true);
 
     try {
-      await register(name, email, password);
+      await register(name, email);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      setError(err.response?.data?.message || err.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -59,20 +58,13 @@ const Register = () => {
             />
           </div>
 
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Choose a strong password"
-              required
-              minLength="6"
-            />
+          <div className="passkey-info">
+            <p>Passwordless login using passkey</p>
+            <small>You'll use your device's biometric authentication or security key</small>
           </div>
 
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Creating account...' : 'Sign Up'}
+            {loading ? 'Creating passkey...' : 'Sign Up with Passkey'}
           </button>
         </form>
 

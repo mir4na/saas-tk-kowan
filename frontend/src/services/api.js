@@ -21,9 +21,20 @@ api.interceptors.request.use(
 );
 
 export const authAPI = {
-  register: (data) => api.post('/auth/register', data),
-  login: (data) => api.post('/auth/login', data),
+  registerOptions: (data) => api.post('/auth/register/options', data),
+  registerVerify: (data) => api.post('/auth/register/verify', data),
+  loginOptions: (data) => api.post('/auth/login/options', data),
+  loginVerify: (data) => api.post('/auth/login/verify', data),
   getMe: () => api.get('/auth/me'),
+};
+
+export const profileAPI = {
+  updateName: (data) => api.put('/profile/name', data),
+  updatePhoto: (formData) => {
+    const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+    return api.put('/profile/photo', formData, config);
+  },
+  deletePhoto: () => api.delete('/profile/photo'),
 };
 
 export const notesAPI = {

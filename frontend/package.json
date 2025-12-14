@@ -4,6 +4,7 @@
   "description": "NOTTU - Note-taking SaaS Frontend",
   "private": true,
   "dependencies": {
+    "@simplewebauthn/browser": "^13.2.2",
     "axios": "^1.6.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

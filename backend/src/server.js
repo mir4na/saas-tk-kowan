@@ -3,8 +3,11 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 require('dotenv').config();
+const { initBucket } = require('./config/minio');
 
 const app = express();
+
+initBucket();
 
 app.use(helmet());
 app.use(cors({
@@ -98,6 +101,7 @@ app.post('/debug-request', (req, res) => {
 
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/notes', require('./routes/notes'));
+app.use('/api/profile', require('./routes/profile'));
 
 app.use((req, res) => {
   res.status(404).json({

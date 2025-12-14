@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { notesAPI } from '../services/api';
+import Navbar from '../components/Navbar';
 import './Notes.css';
 
 const Notes = () => {
@@ -156,18 +157,19 @@ const Notes = () => {
   }
 
   return (
-    <div className="notes-container">
-      {/* Sidebar */}
-      <div className="notes-sidebar">
-        <div className="sidebar-header">
-          <h2>📝 NOTTU</h2>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <button onClick={toggleTheme} className="theme-toggle" title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>
-              {theme === 'light' ? '🌙' : '☀️'}
-            </button>
-            <button onClick={createNewNote} className="btn-new-note">+ NEW</button>
+    <>
+      <Navbar />
+      <div className="notes-container">
+        {/* Sidebar */}
+        <div className="notes-sidebar">
+          <div className="sidebar-header">
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <button onClick={toggleTheme} className="theme-toggle" title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>
+                {theme === 'light' ? '🌙' : '☀️'}
+              </button>
+              <button onClick={createNewNote} className="btn-new-note">+ NEW</button>
+            </div>
           </div>
-        </div>
 
         <div className="notes-list">
           {notes.length === 0 ? (
@@ -194,10 +196,7 @@ const Notes = () => {
         </div>
 
         <div className="sidebar-footer">
-          <div className="user-info">
-            <span>{user?.name}</span>
-          </div>
-          <button onClick={handleBackToLanding} className="btn-back-landing" title="Back to Home" style={{ width: '100%', marginTop: '12px' }}>
+          <button onClick={handleBackToLanding} className="btn-back-landing" title="Back to Home" style={{ width: '100%' }}>
             🏠 Back to Landing
           </button>
         </div>
@@ -261,7 +260,8 @@ const Notes = () => {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 };
 

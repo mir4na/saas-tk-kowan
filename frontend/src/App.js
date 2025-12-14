@@ -5,6 +5,7 @@ import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Notes from './pages/Notes';
+import Profile from './pages/Profile';
 import CursorEffect from './components/CursorEffect';
 import './App.css';
 
@@ -66,6 +67,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Notes />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
                 </ProtectedRoute>
               }
             />
