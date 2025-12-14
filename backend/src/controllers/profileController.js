@@ -1,5 +1,5 @@
 const pool = require('../config/database');
-const { minioClient, bucketName } = require('../config/minio');
+const { uploadToS3, deleteFromS3, getSignedUrlForObject } = require('../config/s3');
 const crypto = require('crypto');
 
 const updateName = async (req, res) => {
@@ -19,6 +19,11 @@ const updateName = async (req, res) => {
     );
 
     const user = result.rows[0];
+    let profilePhoto = user.profile_photo;
+
+    if (profilePhoto && profilePhoto.startsWith('profiles/')) {
+      profilePhoto = await getSignedUrlForObject(profilePhoto, 86400);
+    }
 
     res.json({
       success: true,
@@ -28,7 +33,7 @@ const updateName = async (req, res) => {
           id: user.id,
           email: user.email,
           name: user.name,
-          profilePhoto: user.profile_photo
+          profilePhoto: profilePhoto
         }
       }
     });
@@ -68,17 +73,9 @@ const updatePhoto = async (req, res) => {
     }
 
     const fileExt = req.file.originalname.split('.').pop();
-    const fileName = `${req.user.id}-${crypto.randomBytes(16).toString('hex')}.${fileExt}`;
+    const fileName = `profiles/${req.user.id}-${crypto.randomBytes(16).toString('hex')}.${fileExt}`;
 
-    await minioClient.putObject(
-      bucketName,
-      fileName,
-      req.file.buffer,
-      req.file.size,
-      {
-        'Content-Type': req.file.mimetype
-      }
-    );
+    await uploadToS3(fileName, req.file.buffer, req.file.mimetype);
 
     const currentUserResult = await pool.query(
       'SELECT profile_photo FROM users WHERE id = $1',
@@ -87,23 +84,21 @@ const updatePhoto = async (req, res) => {
 
     const oldPhoto = currentUserResult.rows[0]?.profile_photo;
 
-    if (oldPhoto) {
-      const oldFileName = oldPhoto.split('/').pop();
+    if (oldPhoto && oldPhoto.startsWith('profiles/')) {
       try {
-        await minioClient.removeObject(bucketName, oldFileName);
+        await deleteFromS3(oldPhoto);
       } catch (deleteError) {
         console.error('Error deleting old photo:', deleteError);
       }
     }
 
-    const photoUrl = `http://${process.env.MINIO_ENDPOINT}:${process.env.MINIO_PORT}/${bucketName}/${fileName}`;
-
     const result = await pool.query(
       'UPDATE users SET profile_photo = $1 WHERE id = $2 RETURNING id, email, name, profile_photo',
-      [photoUrl, req.user.id]
+      [fileName, req.user.id]
     );
 
     const user = result.rows[0];
+    const signedUrl = await getSignedUrlForObject(fileName, 86400);
 
     res.json({
       success: true,
@@ -113,7 +108,7 @@ const updatePhoto = async (req, res) => {
           id: user.id,
           email: user.email,
           name: user.name,
-          profilePhoto: user.profile_photo
+          profilePhoto: signedUrl
         }
       }
     });
@@ -136,10 +131,9 @@ const deletePhoto = async (req, res) => {
 
     const oldPhoto = currentUserResult.rows[0]?.profile_photo;
 
-    if (oldPhoto) {
-      const oldFileName = oldPhoto.split('/').pop();
+    if (oldPhoto && oldPhoto.startsWith('profiles/')) {
       try {
-        await minioClient.removeObject(bucketName, oldFileName);
+        await deleteFromS3(oldPhoto);
       } catch (deleteError) {
         console.error('Error deleting photo:', deleteError);
       }

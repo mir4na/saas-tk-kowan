@@ -3,11 +3,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 require('dotenv').config();
-const { initBucket } = require('./config/minio');
 
 const app = express();
-
-initBucket();
 
 app.use(helmet());
 app.use(cors({
@@ -27,7 +24,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Test database connection endpoint
 app.get('/test-db', async (req, res) => {
   try {
     const pool = require('./config/database');
@@ -59,7 +55,6 @@ app.get('/test-db', async (req, res) => {
   }
 });
 
-// Test environment variables endpoint
 app.get('/test-env', (req, res) => {
   res.json({
     success: true,
@@ -71,8 +66,8 @@ app.get('/test-env', (req, res) => {
         JWT_SECRET: !!process.env.JWT_SECRET,
         JWT_EXPIRE: !!process.env.JWT_EXPIRE,
         CORS_ORIGIN: !!process.env.CORS_ORIGIN,
-        APP_NAME: !!process.env.APP_NAME,
-        APP_URL: !!process.env.APP_URL
+        AWS_REGION: !!process.env.AWS_REGION,
+        AWS_S3_BUCKET: !!process.env.AWS_S3_BUCKET
       },
       databaseUrl: process.env.DATABASE_URL ?
         `postgresql://${process.env.DATABASE_URL.split('@')[1]?.split('/')[0] || 'hidden'}` :
@@ -81,7 +76,6 @@ app.get('/test-env', (req, res) => {
   });
 });
 
-// Debug endpoint to inspect request body
 app.post('/debug-request', (req, res) => {
   res.json({
     success: true,
