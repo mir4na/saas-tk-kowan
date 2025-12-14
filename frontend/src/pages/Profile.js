@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar';
 import './Profile.css';
 
 const Profile = () => {
-  const { user, updateUser, logout } = useAuth();
+  const { user, updateUser } = useAuth();
   const [name, setName] = useState(user?.name || '');
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);

@@ -7,7 +7,7 @@ import './Notes.css';
 
 const Notes = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  useAuth();
   const [notes, setNotes] = useState([]);
   const [selectedNote, setSelectedNote] = useState(null);
   const [title, setTitle] = useState('');
