@@ -56,3 +56,4 @@ docker-compose.override.yml
 # Production outputs
 /frontend/build
 /backend/dist
+/k8s/*.yaml
