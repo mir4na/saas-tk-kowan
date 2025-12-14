@@ -2,17 +2,17 @@ version: '3.8'
 
 services:
   # PostgreSQL Database
-  database:
+  postgres:
     image: postgres:14-alpine
-    container_name: taskflow-db-prod
+    container_name: nottu-postgres-prod
     environment:
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_DB: ${DB_NAME:-kowan}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_prod_data:/var/lib/postgresql/data
     networks:
-      - taskflow-network
+      - nottu-prod-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
       interval: 10s
@@ -20,28 +20,54 @@ services:
       retries: 5
     restart: always
 
+  # MinIO Object Storage
+  minio:
+    image: minio/minio:latest
+    container_name: nottu-minio-prod
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+    volumes:
+      - minio_prod_data:/data
+    networks:
+      - nottu-prod-network
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    restart: always
+
   # Backend API
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: taskflow-backend-prod
+    container_name: nottu-backend-prod
     environment:
       NODE_ENV: production
       PORT: 5000
-      DB_HOST: database
-      DB_PORT: 5432
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
       JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRE: 7d
+      JWT_EXPIRE: ${JWT_EXPIRE:-7d}
       CORS_ORIGIN: ${CORS_ORIGIN}
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_BUCKET: ${MINIO_BUCKET:-nottu-profiles}
+      MINIO_USE_SSL: ${MINIO_USE_SSL:-false}
+      RP_NAME: ${RP_NAME:-NOTTU}
+      RP_ID: ${RP_ID}
+      ORIGIN: ${ORIGIN}
     depends_on:
-      database:
+      postgres:
+        condition: service_healthy
+      minio:
         condition: service_healthy
     networks:
-      - taskflow-network
+      - nottu-prod-network
     restart: always
     command: sh -c "sleep 10 && node src/utils/migrate.js && npm start"
 
@@ -51,21 +77,20 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        REACT_APP_API_URL: ${FRONTEND_API_URL}
-    container_name: taskflow-frontend-prod
-    ports:
-      - "80:80"
-      - "443:443"
+        REACT_APP_API_URL: ${REACT_APP_API_URL}
+    container_name: nottu-frontend-prod
+    environment:
+      REACT_APP_API_URL: ${REACT_APP_API_URL}
     depends_on:
       - backend
     networks:
-      - taskflow-network
+      - nottu-prod-network
     restart: always
 
   # Nginx Reverse Proxy
   nginx:
     image: nginx:alpine
-    container_name: taskflow-nginx
+    container_name: nottu-nginx-prod
     ports:
       - "80:80"
       - "443:443"
@@ -76,13 +101,15 @@ services:
       - backend
       - frontend
     networks:
-      - taskflow-network
+      - nottu-prod-network
     restart: always
 
 volumes:
-  postgres_data:
+  postgres_prod_data:
+    driver: local
+  minio_prod_data:
     driver: local
 
 networks:
-  taskflow-network:
+  nottu-prod-network:
     driver: bridge
