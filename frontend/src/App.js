@@ -10,6 +10,7 @@ import Paste from './pages/Paste';
 import Shortener from './pages/Shortener';
 import Profile from './pages/Profile';
 import ResourcesNotFound from './pages/ResourcesNotFound';
+import ShortLink from './pages/ShortLink';
 
 import './App.css';
 
@@ -106,6 +107,7 @@ function App() {
               />
 
               <Route path="/p/:slug" element={<Paste />} />
+              <Route path="/u/:code" element={<ShortLink />} />
               <Route path="/resources-not-found" element={<ResourcesNotFound />} />
               <Route path="*" element={<Navigate to="/" />} />
           </Routes>
