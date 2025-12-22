@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Modal from '../components/Modal';
 import ShortenerModal from '../components/ShortenerModal';
-import ThemeToggle from '../components/ThemeToggle';
 import './Landing.css';
 
 const Landing = () => {
@@ -12,6 +11,9 @@ const Landing = () => {
   const [particles, setParticles] = useState([]);
   const [showFeatureModal, setShowFeatureModal] = useState(false);
   const [showShortenerModal, setShowShortenerModal] = useState(false);
+  const carouselRef = useRef(null);
+  const hasCenteredRef = useRef(false);
+  const animationRef = useRef(null);
 
   useEffect(() => {
     const newParticles = Array.from({ length: 50 }, (_, i) => ({
@@ -32,15 +34,127 @@ const Landing = () => {
     }
   };
 
-  const handlePastebinClick = () => {
+  const handleQuickclipClick = () => {
     setShowFeatureModal(false);
-    navigate('/pastebin');
+    navigate('/quickclip');
   };
 
   const handleShortenerClick = () => {
     setShowFeatureModal(false);
     setShowShortenerModal(true);
   };
+
+  const features = useMemo(() => ([
+    {
+      icon: '📝',
+      title: 'QuickClip Pastes',
+      description: 'Create and share code snippets instantly with clean, readable formatting.',
+    },
+    {
+      icon: '🔗',
+      title: 'Smart Shortener',
+      description: 'Generate short links for anything you share, with simple, fast redirects.',
+    },
+    {
+      icon: '🔐',
+      title: 'Passkey Login',
+      description: 'Sign in with WebAuthn passkeys for secure, passwordless access.',
+    },
+    {
+      icon: '🛡️',
+      title: 'Private by Default',
+      description: 'Your content stays protected with secure sessions and access controls.',
+    },
+    {
+      icon: '⚡',
+      title: 'Built for Speed',
+      description: 'Fast load times and responsive UI so sharing never slows you down.',
+    },
+    {
+      icon: '🧭',
+      title: 'Quick Access',
+      description: 'Jump between pastes and links from one simple dashboard.',
+    },
+  ]), []);
+
+  const extendedFeatures = useMemo(() => (
+    [...features, ...features, ...features]
+  ), [features]);
+
+  useEffect(() => {
+    if (!carouselRef.current || hasCenteredRef.current) {
+      return;
+    }
+
+    const centerTrack = () => {
+      if (!carouselRef.current) {
+        return;
+      }
+
+      const oneSetWidth = carouselRef.current.scrollWidth / 3;
+      carouselRef.current.scrollLeft = oneSetWidth;
+      hasCenteredRef.current = true;
+    };
+
+    const frameId = requestAnimationFrame(centerTrack);
+    return () => cancelAnimationFrame(frameId);
+  }, []);
+
+  const normalizeLoop = () => {
+    if (!carouselRef.current) {
+      return;
+    }
+
+    const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+    const oneSetWidth = scrollWidth / 3;
+    const maxScrollLeft = scrollWidth - clientWidth;
+    const minThreshold = oneSetWidth * 0.25;
+    const maxThreshold = oneSetWidth * 1.75;
+
+    if (maxScrollLeft <= 0) {
+      return;
+    }
+
+    if (scrollLeft <= minThreshold) {
+      carouselRef.current.scrollLeft = scrollLeft + oneSetWidth;
+    } else if (scrollLeft >= maxThreshold) {
+      carouselRef.current.scrollLeft = scrollLeft - oneSetWidth;
+    }
+  };
+
+  const handleCarouselScroll = () => {
+    normalizeLoop();
+  };
+
+  useEffect(() => {
+    if (!carouselRef.current) {
+      return undefined;
+    }
+
+    let lastTime = performance.now();
+    const speed = 0.08;
+
+    const tick = time => {
+      if (!carouselRef.current) {
+        return;
+      }
+
+      const delta = time - lastTime;
+      lastTime = time;
+      carouselRef.current.scrollLeft += delta * speed;
+      normalizeLoop();
+      animationRef.current = requestAnimationFrame(tick);
+    };
+
+    animationRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <div className="landing-page">
@@ -61,9 +175,8 @@ const Landing = () => {
       </div>
 
       <header className="landing-header">
-        <div className="brand-logo">⚡ PASTEBIN</div>
+        <div className="brand-logo">⚡ QUICKCLIP</div>
         <nav className="nav-links">
-          <ThemeToggle />
           {isAuthenticated ? (
             <>
               <button onClick={() => setShowFeatureModal(true)} className="nav-link">Features</button>
@@ -82,7 +195,7 @@ const Landing = () => {
         <h1 className="hero-title">Powering the Future of Productivity</h1>
         <p className="hero-subtitle">
           Secure, lightning-fast tools for modern teams. Share code snippets instantly 
-          and create smart short links with military-grade encryption.
+          and create smart short links with secure access controls.
         </p>
         <button className="cta-button" onClick={handleGetStarted}>
           Get Started
@@ -90,55 +203,20 @@ const Landing = () => {
       </main>
 
       <section className="features-section">
-        <h2 className="section-title">Why Choose Pastebin?</h2>
-        <div className="features-grid">
-          <div className="feature-card">
-            <div className="feature-icon">🔐</div>
-            <h3 className="feature-title">Quantum Security</h3>
-            <p className="feature-description">
-              Military-grade encryption with WebAuthn passkeys. No passwords, no breaches. 
-              Your data is protected by the latest cryptographic standards.
-            </p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">⚡</div>
-            <h3 className="feature-title">Lightning Fast</h3>
-            <p className="feature-description">
-              Edge computing and neural caching deliver instant responses worldwide. 
-              Experience zero-latency collaboration across continents.
-            </p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">🔗</div>
-            <h3 className="feature-title">Smart Links</h3>
-            <p className="feature-description">
-              AI-optimized URL shortening with predictive analytics. Track clicks, 
-              manage expiry, and gain insights into your link performance.
-            </p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">📝</div>
-            <h3 className="feature-title">Code Sharing</h3>
-            <p className="feature-description">
-              Share code snippets with syntax highlighting and version control. 
-              Collaborate with your team in real-time with instant updates.
-            </p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">🌐</div>
-            <h3 className="feature-title">Global CDN</h3>
-            <p className="feature-description">
-              Content delivered from 200+ edge locations worldwide. 
-              Your pastes and links load instantly, anywhere on Earth.
-            </p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">📊</div>
-            <h3 className="feature-title">Analytics Dashboard</h3>
-            <p className="feature-description">
-              Real-time insights into your content performance. Track views, 
-              geographic distribution, and engagement metrics.
-            </p>
+        <h2 className="section-title">Why Choose QuickClip?</h2>
+        <div className="features-carousel">
+          <div
+            className="features-track"
+            ref={carouselRef}
+            onScroll={handleCarouselScroll}
+          >
+            {extendedFeatures.map((feature, index) => (
+              <div className="feature-card" key={`${feature.title}-${index}`}>
+                <div className="feature-icon">{feature.icon}</div>
+                <h3 className="feature-title">{feature.title}</h3>
+                <p className="feature-description">{feature.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -146,7 +224,7 @@ const Landing = () => {
       <section className="cta-section">
         <h2 className="cta-title">Ready to Transform Your Workflow?</h2>
         <p className="cta-text">
-          Join thousands of developers and teams already using Pastebin to streamline their productivity.
+          Join thousands of developers and teams already using QuickClip to streamline their productivity.
         </p>
         <button className="cta-button-secondary" onClick={handleGetStarted}>
           Start Free Today
@@ -162,9 +240,9 @@ const Landing = () => {
           <h2>Choose Your Tool</h2>
           <p>Select a feature to get started</p>
           <div className="feature-options">
-            <div className="feature-option" onClick={handlePastebinClick}>
+            <div className="feature-option" onClick={handleQuickclipClick}>
               <div className="feature-option-icon">📝</div>
-              <div className="feature-option-title">Pastebin</div>
+              <div className="feature-option-title">QuickClip</div>
               <p className="feature-option-desc">Share code snippets</p>
             </div>
             <div className="feature-option" onClick={handleShortenerClick}>

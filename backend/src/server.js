@@ -18,7 +18,7 @@ app.use(morgan('dev'));
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
-    message: 'Pastebin API is running',
+    message: 'QuickClip API is running',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV
   });

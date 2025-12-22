@@ -172,7 +172,7 @@ const Dashboard = () => {
     <div className="dashboard">
       <header className="topbar">
         <div className="brand" onClick={() => window.location.href = '/'} style={{cursor: 'pointer'}}>
-           Pastebin Mini <span style={{fontSize: '0.6em', opacity: 0.7}}>// Feature</span>
+           QuickClip Mini <span style={{fontSize: '0.6em', opacity: 0.7}}>// Feature</span>
         </div>
         <div className="user-area">
           <button className="neon-button small" style={{marginRight: '20px'}} onClick={() => window.location.href='/'}>

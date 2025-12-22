@@ -1,7 +1,7 @@
 {
-  "name": "pastebin-frontend",
+  "name": "quickclip-frontend",
   "version": "1.0.0",
-  "description": "PASTEBIN - Modern SaaS Application",
+  "description": "QUICKCLIP - Modern SaaS Application",
   "private": true,
   "dependencies": {
     "@simplewebauthn/browser": "^13.2.2",

@@ -2,7 +2,7 @@ const pool = require('../config/database');
 
 const migrate = async () => {
   try {
-    console.log('Starting database migration for Pastebin with auth...');
+    console.log('Starting database migration for QuickClip with auth...');
 
     await pool.query('DROP TABLE IF EXISTS pastes CASCADE;');
     await pool.query('DROP TABLE IF EXISTS short_urls CASCADE;');
@@ -104,7 +104,7 @@ const migrate = async () => {
     `);
     console.log('✓ indexes created');
 
-    console.log('\n✅ Migration completed. Pastebin schema with auth is ready.');
+    console.log('\n✅ Migration completed. QuickClip schema with auth is ready.');
     process.exit(0);
   } catch (error) {
     console.error('❌ Migration failed:', error);

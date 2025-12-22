@@ -16,9 +16,9 @@ function Choice() {
         </div>
         
         <div className="cards-row">
-          <div className="feature-card" onClick={() => navigate('/pastebin')}>
+          <div className="feature-card" onClick={() => navigate('/quickclip')}>
             <div className="card-icon">📝</div>
-            <h3>Pastebin</h3>
+            <h3>QuickClip</h3>
             <p>Store and share code snippets securely.</p>
           </div>
           

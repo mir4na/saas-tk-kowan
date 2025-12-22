@@ -1,7 +1,6 @@
 import React, { memo } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { ThemeProvider } from './contexts/ThemeContext';
 
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -43,12 +42,11 @@ const PublicRoute = memo(({ children }) => {
 
 function App() {
   return (
-    <ThemeProvider>
-      <Router>
-        <AuthProvider>
-          <div className="App">
-            <Routes>
-              <Route path="/" element={<Landing />} />
+    <Router>
+      <AuthProvider>
+        <div className="App">
+          <Routes>
+            <Route path="/" element={<Landing />} />
 
               <Route
                 path="/login"
@@ -78,7 +76,7 @@ function App() {
               />
 
               <Route
-                path="/pastebin"
+                path="/quickclip"
                 element={
                   <ProtectedRoute>
                     <Dashboard />
@@ -97,11 +95,10 @@ function App() {
 
               <Route path="/p/:slug" element={<Paste />} />
               <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-          </div>
-        </AuthProvider>
-      </Router>
-    </ThemeProvider>
+          </Routes>
+        </div>
+      </AuthProvider>
+    </Router>
   );
 }
 

@@ -1,6 +1,6 @@
-# NOTTU Monorepo
+# QuickClip Monorepo
 
-This repository contains the NOTTU note-taking SaaS application with a Node.js/Express backend and a React frontend. The project is structured as a simple monorepo with `backend/` and `frontend/` workspaces plus Docker Compose helpers for local development and production.
+This repository contains the QuickClip pastebin & URL shortener SaaS application with a Node.js/Express backend and a React frontend. The project is structured as a simple monorepo with `backend/` and `frontend/` workspaces plus Docker Compose helpers for local development and production.
 
 ## Prerequisites
 - Node.js 22+ for the backend (see `backend/package.json`)

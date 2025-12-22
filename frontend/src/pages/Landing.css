@@ -205,12 +205,33 @@
   -webkit-text-fill-color: transparent;
 }
 
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
+.features-carousel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 90%;
   max-width: 1400px;
   margin: 0 auto;
+  overflow: visible;
+  padding: 20px 0;
+}
+
+.features-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(280px, 1fr);
+  gap: 30px;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 20px 4px 20px;
+  scrollbar-width: none;
+  width: 100%;
+  cursor: default;
+  user-select: none;
+}
+
+.features-track::-webkit-scrollbar {
+  display: none;
 }
 
 .feature-card {
@@ -316,35 +337,6 @@
   box-shadow: 0 12px 40px rgba(255, 0, 110, 0.6);
 }
 
-[data-theme="light"] .particles-bg .particle {
-  background: rgba(0, 119, 182, 0.4);
-  box-shadow: 0 0 10px rgba(0, 119, 182, 0.3);
-}
-
-[data-theme="light"] .landing-page::before {
-  background: 
-    radial-gradient(circle at 20% 50%, rgba(0, 119, 182, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(114, 9, 183, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 40% 20%, rgba(201, 24, 74, 0.06) 0%, transparent 40%);
-}
-
-[data-theme="light"] .landing-page::after {
-  background-image: 
-    linear-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
-}
-
-[data-theme="light"] .feature-card {
-  background: linear-gradient(135deg, rgba(0, 119, 182, 0.08), rgba(114, 9, 183, 0.08));
-  border-color: rgba(0, 119, 182, 0.3);
-}
-
-[data-theme="light"] .feature-card:hover {
-  background: linear-gradient(135deg, rgba(0, 119, 182, 0.15), rgba(114, 9, 183, 0.15));
-  border-color: rgba(0, 119, 182, 0.5);
-  box-shadow: 0 20px 60px rgba(0, 119, 182, 0.2);
-}
-
 .landing-footer {
   text-align: center;
   padding: 40px;
@@ -379,6 +371,10 @@
   
   .feature-card {
     padding: 24px;
+  }
+
+  .features-carousel {
+    width: 100%;
   }
   
   .brand-logo {

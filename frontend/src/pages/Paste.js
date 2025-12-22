@@ -55,7 +55,7 @@ const Paste = () => {
         <>
           <header className="paste-header">
             <div>
-              <p className="eyebrow">Pastebin Mini</p>
+              <p className="eyebrow">QuickClip Mini</p>
               <h1>{paste.title}</h1>
               <div className="muted small">/{paste.slug}</div>
             </div>
