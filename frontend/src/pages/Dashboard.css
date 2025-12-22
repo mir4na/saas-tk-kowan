@@ -101,7 +101,8 @@
 .layout {
   display: grid;
   grid-template-columns: 280px 1fr;
-  min-height: calc(100vh - var(--dashboard-nav-height));
+  height: calc(100vh - var(--dashboard-nav-height)); /* Fixed height */
+  overflow: hidden; /* Prevent body scroll */
 }
 
 .sidebar {
@@ -109,6 +110,7 @@
   padding: 16px;
   background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(5px);
+  overflow-y: auto; /* Scrollable sidebar */
 }
 
 .sidebar__header {
@@ -147,6 +149,10 @@
 
 .editor {
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content horizontally */
+  overflow-y: auto; /* Allow scrolling content if needed, though goal is single screen */
 }
 
 .editor__header {
@@ -156,6 +162,8 @@
   align-items: center;
   margin-bottom: 20px;
   flex-wrap: wrap;
+  width: 100%;
+  max-width: 900px; /* Constrain width */
 }
 
 .title-input {
@@ -190,13 +198,15 @@
 
 .editor__textarea {
   width: 100%;
-  min-height: 70vh;
+  max-width: 900px; /* Constrain width to make it more box-like */
+  height: calc(100vh - 200px); /* Adjust height to fit screen */
+  min-height: 400px;
   padding: 20px;
   border-radius: 15px;
   background: rgba(0, 0, 0, 0.3);
   color: #fff;
   border: 1px solid var(--glass-border);
-  resize: vertical;
+  resize: none; /* Disable manual resize */
   font-family: 'Fira Code', monospace;
   font-size: 14px;
   line-height: 1.6;
@@ -210,7 +220,9 @@
 .empty-state {
   display: grid;
   place-items: center;
-  height: 70vh;
+  height: 100%; /* Fill available space */
+  width: 100%;
+  max-width: 900px;
   color: rgba(255,255,255,0.4);
   border: 2px dashed rgba(255,255,255,0.1);
   border-radius: 20px;

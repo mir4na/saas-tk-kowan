@@ -80,6 +80,11 @@ const migrate = async () => {
     `);
 
     await pool.query(`
+      ALTER TABLE users
+      ADD COLUMN IF NOT EXISTS description VARCHAR(60);
+    `);
+
+    await pool.query(`
       CREATE OR REPLACE FUNCTION update_pastes_updated_at()
       RETURNS TRIGGER AS $$
       BEGIN
