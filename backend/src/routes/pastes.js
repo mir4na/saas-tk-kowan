@@ -1,5 +1,5 @@
 const express = require('express');
-const { listPastes, getPaste, createPaste, updatePaste } = require('../controllers/pasteController');
+const { listPastes, getPaste, createPaste, updatePaste, verifyPastePassword } = require('../controllers/pasteController');
 const { authenticate, optionalAuth } = require('../middleware/auth');
 
 const router = express.Router();
@@ -14,6 +14,7 @@ router.post('/', authenticate, (req, res, next) => {
     next();
 }, createPaste);
 router.get('/:slug', optionalAuth, getPaste);
+router.post('/:slug/verify', optionalAuth, verifyPastePassword);
 router.put('/:slug', authenticate, updatePaste);
 
 module.exports = router;

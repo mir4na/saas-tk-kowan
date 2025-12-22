@@ -54,6 +54,7 @@ const migrate = async () => {
         title VARCHAR(255) DEFAULT 'Untitled Paste',
         content TEXT DEFAULT '',
         is_public BOOLEAN DEFAULT TRUE,
+        password_hash TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );

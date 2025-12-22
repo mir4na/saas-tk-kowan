@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { pasteAPI, profileAPI } from '../services/api';
+import ProfileEditModal from '../components/ProfileEditModal';
+import SetPasswordModal from '../components/SetPasswordModal';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -20,10 +22,13 @@ const Dashboard = () => {
     }
   };
   const [isPublic, setIsPublic] = useState(true);
+  const [password, setPassword] = useState('');
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [dirty, setDirty] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showSetPasswordModal, setShowSetPasswordModal] = useState(false);
   const fileInputRef = useRef(null);
 
   const loadPastes = useCallback(async () => {
@@ -56,6 +61,7 @@ const Dashboard = () => {
       setTitle(newPaste.title);
       setContent(newPaste.content || '');
       setIsPublic(newPaste.is_public);
+      setPassword('');
       setDirty(false);
     } catch (err) {
       console.error('Failed to create paste', err);
@@ -69,18 +75,32 @@ const Dashboard = () => {
     setTitle(paste.title);
     setContent(paste.content || '');
     setIsPublic(paste.is_public);
+    setPassword('');
     setLastSaved(null);
     setDirty(false);
   };
 
-  const savePaste = useCallback(async () => {
+  const savePaste = useCallback(async (overrides = {}) => {
     if (!selectedPaste) return;
+    
+    // Determine values to save: use overrides if provided, otherwise current state
+    const nextTitle = overrides.title !== undefined ? overrides.title : title;
+    const nextContent = overrides.content !== undefined ? overrides.content : content;
+    const nextIsPublic = overrides.isPublic !== undefined ? overrides.isPublic : isPublic;
+    const nextPassword = overrides.password !== undefined ? overrides.password : password;
+
+    if (!nextIsPublic && !nextPassword && !selectedPaste.has_password) {
+      setShowSetPasswordModal(true);
+      return;
+    }
+    
     setSaving(true);
     try {
       const res = await pasteAPI.update(selectedPaste.slug, {
-        title: title || 'Untitled Paste',
-        content,
-        isPublic
+        title: nextTitle || 'Untitled Paste',
+        content: nextContent,
+        isPublic: nextIsPublic,
+        password: !nextIsPublic && nextPassword ? nextPassword : undefined
       });
       const updated = res.data.data;
       setPastes((prev) => prev.map((p) => (p.slug === selectedPaste.slug ? updated : p)));
@@ -92,43 +112,60 @@ const Dashboard = () => {
     } finally {
       setSaving(false);
     }
-  }, [selectedPaste, title, content, isPublic]);
+  }, [selectedPaste, title, content, isPublic, password]);
 
   useEffect(() => {
     if (!selectedPaste) return;
     setDirty(true);
-  }, [title, content, isPublic, selectedPaste]);
+  }, [title, content, isPublic, password, selectedPaste]);
 
   const copyLink = (slug) => {
     const link = `${window.location.origin}/p/${slug}`;
     navigator.clipboard.writeText(link);
   };
 
-  const onAvatarChange = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const formData = new FormData();
-    formData.append('photo', file);
+  const handleProfileSave = async ({ name, photoFile }) => {
     setAvatarUploading(true);
     try {
-      const res = await profileAPI.updatePhoto(formData);
-      updateUser(res.data.data.user);
+      if (photoFile) {
+        const formData = new FormData();
+        formData.append('photo', photoFile);
+        const photoRes = await profileAPI.updatePhoto(formData);
+        updateUser(photoRes.data.data.user);
+      }
+      
+      if (name && name !== user.name) {
+        const nameRes = await profileAPI.updateName({ name });
+        updateUser(nameRes.data.data.user);
+      }
+      
+      setShowProfileModal(false);
     } catch (err) {
-      console.error('Failed to upload avatar', err);
+      console.error('Failed to update profile', err);
     } finally {
       setAvatarUploading(false);
     }
   };
 
-  const onNameChange = async () => {
-    const newName = prompt('Update display name', user.name);
-    if (!newName) return;
-    try {
-      const res = await profileAPI.updateName({ name: newName });
-      updateUser(res.data.data.user);
-    } catch (err) {
-      console.error('Failed to update name', err);
+  const handleTogglePublic = async (e) => {
+    const isNowPublic = e.target.checked;
+    if (!isNowPublic) {
+      if (!password && !selectedPaste?.has_password) {
+        setShowSetPasswordModal(true);
+        return; 
+      }
     }
+    setIsPublic(isNowPublic);
+    // Auto-save logic for better UX
+    await savePaste({ isPublic: isNowPublic });
+  };
+
+  const handleSetPassword = async (pass) => {
+    setPassword(pass);
+    setIsPublic(false);
+    setShowSetPasswordModal(false);
+    // Immediately sync to database
+    await savePaste({ isPublic: false, password: pass });
   };
 
   return (
@@ -147,18 +184,10 @@ const Dashboard = () => {
           <div className="user-meta">
             <strong>{user.name}</strong>
             <div className="user-actions">
-              <button className="link" onClick={() => fileInputRef.current?.click()}>Upload avatar</button>
-              <button className="link" onClick={onNameChange}>Edit name</button>
+              <button className="link" onClick={() => setShowProfileModal(true)}>Edit profile</button>
               <button className="link" onClick={logout}>Logout</button>
             </div>
           </div>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={onAvatarChange}
-            style={{ display: 'none' }}
-            accept="image/*"
-          />
         </div>
       </header>
 
@@ -205,10 +234,28 @@ const Dashboard = () => {
                     <input
                       type="checkbox"
                       checked={isPublic}
-                      onChange={(e) => setIsPublic(e.target.checked)}
+                      onChange={handleTogglePublic}
                     />
                     <span>{isPublic ? 'Public' : 'Private'}</span>
                   </label>
+                  {!isPublic && (
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Set password (required for private)"
+                      style={{
+                        padding: '8px 12px',
+                        fontSize: '0.9rem',
+                        background: 'rgba(0, 0, 0, 0.3)',
+                        border: '1px solid rgba(0, 217, 255, 0.3)',
+                        borderRadius: '8px',
+                        color: 'white',
+                        outline: 'none',
+                        minWidth: '200px'
+                      }}
+                    />
+                  )}
                   <button className="ghost" onClick={() => copyLink(selectedPaste.slug)}>Share link</button>
                   <button className="primary-btn" onClick={savePaste} disabled={saving || !dirty}>
                     {saving ? 'Saving…' : dirty ? 'Save changes' : 'Saved'}
@@ -241,7 +288,20 @@ const Dashboard = () => {
           )}
         </main>
       </div>
-      {avatarUploading && <div className="toast">Uploading avatar...</div>}
+      {avatarUploading && <div className="toast">Uploading...</div>}
+      {avatarUploading && <div className="toast">Uploading...</div>}
+      <SetPasswordModal
+        isOpen={showSetPasswordModal}
+        onClose={() => setShowSetPasswordModal(false)}
+        onSet={handleSetPassword}
+      />
+      <ProfileEditModal
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+        user={user}
+        onSave={handleProfileSave}
+        uploading={avatarUploading}
+      />
     </div>
   );
 };
