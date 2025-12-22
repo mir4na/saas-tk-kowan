@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, Navigate } from 'react-router-dom';
 import { pasteAPI } from '../services/api';
 import PasswordModal from '../components/PasswordModal';
 import './Paste.css';
@@ -22,7 +22,7 @@ const Paste = () => {
           setShowPasswordModal(true);
           setLoading(false);
         } else {
-          setError('Paste not found or private.');
+          setError('Paste not found');
           console.error(err);
           setLoading(false);
         }
@@ -47,7 +47,7 @@ const Paste = () => {
   };
 
   if (loading) return <div className="full-center"><div className="spinner" /></div>;
-  if (error) return <div className="full-center"><p>{error}</p></div>;
+  if (error) return <Navigate to="/resources-not-found" replace />;
 
   return (
     <div className="paste-page">

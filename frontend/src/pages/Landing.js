@@ -185,7 +185,6 @@ const Landing = () => {
             <>
               <Link to="/login" className="app-nav-link">Login</Link>
               <Link to="/register" className="app-nav-link">Register</Link>
-              <span className="app-nav-link nav-disabled">Profile</span>
             </>
           )}
         </nav>

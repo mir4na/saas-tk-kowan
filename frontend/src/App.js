@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import Paste from './pages/Paste';
 import Shortener from './pages/Shortener';
 import Profile from './pages/Profile';
+import ResourcesNotFound from './pages/ResourcesNotFound';
 
 import './App.css';
 
@@ -105,6 +106,7 @@ function App() {
               />
 
               <Route path="/p/:slug" element={<Paste />} />
+              <Route path="/resources-not-found" element={<ResourcesNotFound />} />
               <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>

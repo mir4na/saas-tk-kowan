@@ -30,6 +30,9 @@ app.use('/api/pastes', require('./routes/pastes'));
 app.use('/api/urls', require('./routes/urls'));
 
 const pool = require('./config/database');
+app.get(['/u', '/u/'], (req, res) => {
+  res.redirect('/');
+});
 app.get('/u/:code', async (req, res) => {
   try {
     const { code } = req.params;
@@ -39,7 +42,7 @@ app.get('/u/:code', async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).send('Short URL not found');
+      return res.redirect('/resources-not-found');
     }
 
     res.redirect(result.rows[0].original_url);
