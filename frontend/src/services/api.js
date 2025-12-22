@@ -37,12 +37,11 @@ export const profileAPI = {
   deletePhoto: () => api.delete('/profile/photo'),
 };
 
-export const notesAPI = {
-  getAll: () => api.get('/notes'),
-  getOne: (id) => api.get(`/notes/${id}`),
-  create: (data) => api.post('/notes', data),
-  update: (id, data) => api.put(`/notes/${id}`, data),
-  delete: (id) => api.delete(`/notes/${id}`),
+export const pasteAPI = {
+  list: () => api.get('/pastes'),
+  get: (slug) => api.get(`/pastes/${slug}`),
+  create: (data) => api.post('/pastes', data),
+  update: (slug, data) => api.put(`/pastes/${slug}`, data)
 };
 
 export default api;

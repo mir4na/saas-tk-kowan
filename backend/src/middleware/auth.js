@@ -15,7 +15,7 @@ const authenticate = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const result = await pool.query(
-      'SELECT id, email, name FROM users WHERE id = $1',
+      'SELECT id, email, name, profile_photo FROM users WHERE id = $1',
       [decoded.userId]
     );
 
@@ -49,4 +49,24 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-module.exports = authenticate;
+const optionalAuth = async (req, res, next) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+  if (!token) {
+    return next();
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const result = await pool.query(
+      'SELECT id, email, name, profile_photo FROM users WHERE id = $1',
+      [decoded.userId]
+    );
+    if (result.rows.length > 0) {
+      req.user = result.rows[0];
+    }
+  } catch (err) {
+    // Ignore invalid token for optional auth
+  }
+  next();
+};
+
+module.exports = { authenticate, optionalAuth };

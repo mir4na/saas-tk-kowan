@@ -12,7 +12,7 @@ export const registerWithPasskey = async (email, name, getOptions, verifyCredent
     credential
   });
 
-  return verifyResponse.data;
+  return verifyResponse.data.data;
 };
 
 export const loginWithPasskey = async (email, getOptions, verifyCredential) => {
@@ -26,5 +26,5 @@ export const loginWithPasskey = async (email, getOptions, verifyCredential) => {
     credential
   });
 
-  return verifyResponse.data;
+  return verifyResponse.data.data;
 };

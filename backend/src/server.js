@@ -15,87 +15,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({
     success: true,
-    message: 'Notepad SaaS API is running',
+    message: 'Pastebin API is running',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV
   });
 });
 
-app.get('/test-db', async (req, res) => {
-  try {
-    const pool = require('./config/database');
-    const result = await pool.query('SELECT NOW() as timestamp, version() as version');
-    res.json({
-      success: true,
-      message: 'Database connected successfully!',
-      data: {
-        timestamp: result.rows[0].timestamp,
-        version: result.rows[0].version,
-        hasEnvVars: {
-          DATABASE_URL: !!process.env.DATABASE_URL,
-          JWT_SECRET: !!process.env.JWT_SECRET,
-          JWT_EXPIRE: !!process.env.JWT_EXPIRE
-        }
-      }
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Database connection failed',
-      error: error.message,
-      hasEnvVars: {
-        DATABASE_URL: !!process.env.DATABASE_URL,
-        JWT_SECRET: !!process.env.JWT_SECRET,
-        JWT_EXPIRE: !!process.env.JWT_EXPIRE
-      }
-    });
-  }
-});
-
-app.get('/test-env', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Environment variables check',
-    data: {
-      NODE_ENV: process.env.NODE_ENV || 'not set',
-      hasVars: {
-        DATABASE_URL: !!process.env.DATABASE_URL,
-        JWT_SECRET: !!process.env.JWT_SECRET,
-        JWT_EXPIRE: !!process.env.JWT_EXPIRE,
-        CORS_ORIGIN: !!process.env.CORS_ORIGIN,
-        AWS_REGION: !!process.env.AWS_REGION,
-        AWS_S3_BUCKET: !!process.env.AWS_S3_BUCKET
-      },
-      databaseUrl: process.env.DATABASE_URL ?
-        `postgresql://${process.env.DATABASE_URL.split('@')[1]?.split('/')[0] || 'hidden'}` :
-        'not set'
-    }
-  });
-});
-
-app.post('/debug-request', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Request debug info',
-    data: {
-      headers: req.headers,
-      body: req.body,
-      bodyType: typeof req.body,
-      bodyKeys: Object.keys(req.body || {}),
-      rawBody: req.rawBody,
-      contentType: req.get('Content-Type'),
-      method: req.method,
-      path: req.path
-    }
-  });
-});
-
-app.use('/auth', require('./routes/auth'));
-app.use('/notes', require('./routes/notes'));
-app.use('/profile', require('./routes/profile'));
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/profile', require('./routes/profile'));
+app.use('/api/pastes', require('./routes/pastes'));
 
 app.use((req, res) => {
   res.status(404).json({

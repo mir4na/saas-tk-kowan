@@ -1,64 +1,54 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import './Auth.css';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       await login(email);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Login failed. Please try again.');
+      setError('Login failed. Please ensure your passkey is registered.');
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-container">
+    <div className="auth">
       <div className="auth-card">
-        <h1>📝 NOTTU</h1>
-        <p className="subtitle">Neural Optimal Text Terminal Unit</p>
-
-        {error && <div className="error-message">{error}</div>}
-
+        <h1>Login</h1>
+        <p className="muted">Use your passkey to sign in.</p>
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Email</label>
+          <label className="field">
+            <span>Email</span>
             <input
               type="email"
+              required
+              placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              required
             />
-          </div>
+          </label>
 
-          <div className="passkey-info">
-            <p>Passwordless login using passkey</p>
-            <small>You'll use your device's biometric authentication or security key</small>
-          </div>
+          {error && <div className="error">{error}</div>}
 
-          <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Authenticating...' : 'Sign In with Passkey'}
+          <button className="primary-btn" type="submit" disabled={loading}>
+            {loading ? 'Signing in...' : 'Login with Passkey'}
           </button>
         </form>
-
-        <p className="auth-footer">
-          Don't have an account? <Link to="/register">Sign up</Link>
-        </p>
+        <p className="muted small">No account? <Link to="/register">Register</Link></p>
       </div>
     </div>
   );

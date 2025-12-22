@@ -1,0 +1,44 @@
+.paste-page {
+  min-height: 100vh;
+  background: #0f172a;
+  color: #e5e7eb;
+  padding: 24px;
+}
+
+.paste-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.paste-content {
+  background: #0b1220;
+  border: 1px solid #1f2937;
+  border-radius: 12px;
+  padding: 16px;
+  white-space: pre-wrap;
+}
+
+.paste-content pre {
+  white-space: pre-wrap;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+.paste-footer {
+  margin-top: 12px;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #a5b4fc;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.pill {
+  background: #1f2937;
+  padding: 6px 10px;
+  border-radius: 999px;
+}

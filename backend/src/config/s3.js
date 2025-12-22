@@ -20,7 +20,7 @@ const uploadToS3 = async (key, buffer, contentType) => {
     Body: buffer,
     ContentType: contentType
   });
-  
+
   await s3Client.send(command);
   return key;
 };
@@ -30,7 +30,7 @@ const deleteFromS3 = async (key) => {
     Bucket: bucketName,
     Key: key
   });
-  
+
   await s3Client.send(command);
 };
 
@@ -39,7 +39,7 @@ const getSignedUrlForObject = async (key, expiresIn = 86400) => {
     Bucket: bucketName,
     Key: key
   });
-  
+
   return await getSignedUrl(s3Client, command, { expiresIn });
 };
 

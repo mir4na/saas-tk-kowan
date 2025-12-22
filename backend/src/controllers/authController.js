@@ -6,6 +6,7 @@ const {
   generateAuthenticationOptions,
   verifyAuthenticationResponse,
 } = require('@simplewebauthn/server');
+const { getSignedUrlForObject } = require('../config/s3');
 
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
@@ -115,7 +116,7 @@ const registerVerify = async (req, res) => {
     const { credential: registeredCredential } = verification.registrationInfo;
 
     const userResult = await pool.query(
-      'INSERT INTO users (email, name) VALUES ($1, $2) RETURNING id, email, name, created_at',
+      'INSERT INTO users (email, name) VALUES ($1, $2) RETURNING id, email, name, created_at, profile_photo',
       [email, name]
     );
 
@@ -141,7 +142,8 @@ const registerVerify = async (req, res) => {
         user: {
           id: user.id,
           email: user.email,
-          name: user.name
+          name: user.name,
+          profilePhoto: null
         }
       }
     });
@@ -299,11 +301,15 @@ const loginVerify = async (req, res) => {
     );
 
     const userDataResult = await pool.query(
-      'SELECT id, email, name FROM users WHERE id = $1',
+      'SELECT id, email, name, profile_photo FROM users WHERE id = $1',
       [user.id]
     );
 
     const userData = userDataResult.rows[0];
+    let profilePhoto = userData.profile_photo;
+    if (profilePhoto && profilePhoto.startsWith('profiles/')) {
+      profilePhoto = await getSignedUrlForObject(profilePhoto, 86400);
+    }
 
     const token = generateToken(user.id);
 
@@ -315,7 +321,8 @@ const loginVerify = async (req, res) => {
         user: {
           id: userData.id,
           email: userData.email,
-          name: userData.name
+          name: userData.name,
+          profilePhoto: profilePhoto
         }
       }
     });
@@ -337,7 +344,10 @@ const getMe = async (req, res) => {
     );
 
     const user = result.rows[0];
-
+    let profilePhoto = user.profile_photo;
+    if (profilePhoto && profilePhoto.startsWith('profiles/')) {
+      profilePhoto = await getSignedUrlForObject(profilePhoto, 86400);
+    }
     res.json({
       success: true,
       data: {
@@ -345,7 +355,7 @@ const getMe = async (req, res) => {
           id: user.id,
           email: user.email,
           name: user.name,
-          profilePhoto: user.profile_photo,
+          profilePhoto: profilePhoto,
           createdAt: user.created_at
         }
       }
