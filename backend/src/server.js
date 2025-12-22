@@ -29,7 +29,6 @@ app.use('/api/profile', require('./routes/profile'));
 app.use('/api/pastes', require('./routes/pastes'));
 app.use('/api/urls', require('./routes/urls'));
 
-// URL Shortener Redirect Route
 const pool = require('./config/database');
 app.get('/u/:code', async (req, res) => {
   try {
