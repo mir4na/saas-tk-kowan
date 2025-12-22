@@ -288,8 +288,6 @@ const Dashboard = () => {
           )}
         </main>
       </div>
-      {avatarUploading && <div className="toast">Uploading...</div>}
-      {avatarUploading && <div className="toast">Uploading...</div>}
       <SetPasswordModal
         isOpen={showSetPasswordModal}
         onClose={() => setShowSetPasswordModal(false)}

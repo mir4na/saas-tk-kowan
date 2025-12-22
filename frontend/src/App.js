@@ -7,7 +7,6 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Paste from './pages/Paste';
-import Choice from './pages/Choice';
 import Shortener from './pages/Shortener';
 
 import './App.css';
@@ -67,22 +66,15 @@ function App() {
               />
 
               <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Choice />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/quickclip"
+                path="/pastebin"
                 element={
                   <ProtectedRoute>
                     <Dashboard />
                   </ProtectedRoute>
                 }
               />
+
+              <Route path="/quickclip" element={<Navigate to="/" />} />
 
               <Route
                 path="/shortener"

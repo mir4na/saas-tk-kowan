@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Modal from '../components/Modal';
-import ShortenerModal from '../components/ShortenerModal';
 import './Landing.css';
 
 const Landing = () => {
@@ -10,7 +9,6 @@ const Landing = () => {
   const navigate = useNavigate();
   const [particles, setParticles] = useState([]);
   const [showFeatureModal, setShowFeatureModal] = useState(false);
-  const [showShortenerModal, setShowShortenerModal] = useState(false);
   const carouselRef = useRef(null);
   const hasCenteredRef = useRef(false);
   const animationRef = useRef(null);
@@ -36,18 +34,18 @@ const Landing = () => {
 
   const handleQuickclipClick = () => {
     setShowFeatureModal(false);
-    navigate('/quickclip');
+    navigate('/pastebin');
   };
 
   const handleShortenerClick = () => {
     setShowFeatureModal(false);
-    setShowShortenerModal(true);
+    navigate('/shortener');
   };
 
   const features = useMemo(() => ([
     {
       icon: '📝',
-      title: 'QuickClip Pastes',
+      title: 'Pastebin',
       description: 'Create and share code snippets instantly with clean, readable formatting.',
     },
     {
@@ -179,13 +177,13 @@ const Landing = () => {
         <nav className="nav-links">
           {isAuthenticated ? (
             <>
-              <button onClick={() => setShowFeatureModal(true)} className="nav-link">Features</button>
-              <button onClick={logout} className="nav-link logout-link">Logout</button>
+              <button onClick={() => setShowFeatureModal(true)} className="app-nav-link">Features</button>
+              <button onClick={logout} className="app-nav-link logout-link">Logout</button>
             </>
           ) : (
             <>
-              <Link to="/login" className="nav-link">Login</Link>
-              <Link to="/register" className="nav-link">Register</Link>
+              <Link to="/login" className="app-nav-link">Login</Link>
+              <Link to="/register" className="app-nav-link">Register</Link>
             </>
           )}
         </nav>
@@ -242,7 +240,7 @@ const Landing = () => {
           <div className="feature-options">
             <div className="feature-option" onClick={handleQuickclipClick}>
               <div className="feature-option-icon">📝</div>
-              <div className="feature-option-title">QuickClip</div>
+              <div className="feature-option-title">Pastebin</div>
               <p className="feature-option-desc">Share code snippets</p>
             </div>
             <div className="feature-option" onClick={handleShortenerClick}>
@@ -254,9 +252,6 @@ const Landing = () => {
         </div>
       </Modal>
 
-      <Modal isOpen={showShortenerModal} onClose={() => setShowShortenerModal(false)}>
-        <ShortenerModal />
-      </Modal>
     </div>
   );
 };

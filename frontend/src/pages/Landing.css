@@ -63,39 +63,6 @@
   align-items: center;
 }
 
-.nav-link {
-  color: rgba(255, 255, 255, 0.8);
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 1rem;
-  transition: all 0.3s;
-  position: relative;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--primary-cyan), var(--primary-purple));
-  transition: width 0.3s;
-}
-
-.nav-link:hover::after {
-  width: 100%;
-}
-
-.nav-link:hover {
-  color: var(--primary-cyan);
-  text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
-}
-
 .logout-link {
   color: rgba(255, 255, 255, 0.8);
 }

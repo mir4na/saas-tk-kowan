@@ -67,11 +67,17 @@ const migrate = async () => {
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
         original_url TEXT NOT NULL,
         short_code VARCHAR(16) UNIQUE NOT NULL,
+        name VARCHAR(30),
         clicks INTEGER DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
     console.log('✓ short_urls table created');
+
+    await pool.query(`
+      ALTER TABLE short_urls
+      ADD COLUMN IF NOT EXISTS name VARCHAR(30);
+    `);
 
     await pool.query(`
       CREATE OR REPLACE FUNCTION update_pastes_updated_at()

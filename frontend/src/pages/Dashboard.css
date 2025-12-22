@@ -55,6 +55,9 @@
   padding: 8px 10px;
   cursor: pointer;
   transition: all 0.2s;
+  font-family: var(--font-main);
+  font-weight: 500;
+  font-size: 1rem;
 }
 
 .ghost:hover, .link:hover {
@@ -226,18 +229,6 @@
 
 .small {
   font-size: 13px;
-}
-
-.toast {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: rgba(0, 0, 0, 0.8);
-  padding: 12px 20px;
-  border-radius: 10px;
-  border: 1px solid var(--primary-color);
-  color: #fff;
-  backdrop-filter: blur(5px);
 }
 
 @media (max-width: 900px) {
