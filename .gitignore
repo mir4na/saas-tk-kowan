@@ -32,12 +32,12 @@ pnpm-debug.log*
 *~
 
 # Environment and secrets
-.env
-.env.*
-!.env.example
-.env.local
-.env.development
-.env.production
+# .env
+# .env.*
+# !.env.example
+# .env.local
+# .env.development
+# .env.production
 
 # Database
 *.db
@@ -56,3 +56,5 @@ docker-compose.override.yml
 # Production outputs
 /frontend/build
 /backend/dist
+/k8s/*.yaml
+/k8s/*.yml

@@ -1,0 +1,191 @@
+.shortener-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.glass-card {
+  background: rgba(10, 10, 30, 0.7);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(0, 243, 255, 0.2);
+  border-radius: 24px;
+  padding: 50px 40px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(0, 243, 255, 0.05);
+  animation: cardEntry 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes cardEntry {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.glass-card h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+}
+
+.shortener-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.futuristic-input {
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(0, 243, 255, 0.3);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1.1rem;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.futuristic-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+  background: rgba(0, 243, 255, 0.05);
+  transform: scale(1.02);
+}
+
+.neon-button {
+  padding: 18px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+  box-shadow: 0 0 25px rgba(0, 243, 255, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.neon-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.neon-button:hover::before {
+  left: 100%;
+}
+
+.neon-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 40px rgba(189, 0, 255, 0.7);
+}
+
+.neon-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-text {
+  color: #ff4d4d;
+  background: rgba(255, 0, 50, 0.1);
+  border: 1px solid rgba(255, 0, 50, 0.3);
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.result-container {
+  background: rgba(0, 243, 255, 0.05);
+  border: 1px solid rgba(0, 243, 255, 0.3);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 20px;
+  animation: resultFade 0.5s ease-in;
+}
+
+@keyframes resultFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result-container p {
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 15px;
+}
+
+.short-url-box {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px dashed var(--primary-color);
+}
+
+.short-link {
+  flex: 1;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+  word-break: break-all;
+  text-shadow: 0 0 5px rgba(0, 243, 255, 0.5);
+}
+
+.icon-button {
+  padding: 10px 20px;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 6px;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.icon-button:hover {
+  background: var(--secondary-color);
+  box-shadow: 0 0 15px rgba(189, 0, 255, 0.5);
+  transform: scale(1.05);
+}
+
+.text-button {
+  display: block;
+  margin: 0 auto;
+  padding: 12px 30px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.text-button:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}

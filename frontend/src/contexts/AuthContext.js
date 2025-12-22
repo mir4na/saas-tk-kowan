@@ -67,11 +67,6 @@ export const AuthProvider = ({ children }) => {
       authAPI.registerVerify
     );
 
-    const { token: jwt, user } = response;
-    localStorage.setItem('token', jwt);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${jwt}`;
-    setToken(jwt);
-    setUser(user);
     return response;
   }, []);
 

@@ -14,7 +14,7 @@ const generateToken = (userId) => {
   });
 };
 
-const rpName = process.env.RP_NAME || 'NOTTU';
+const rpName = process.env.RP_NAME || 'PASTEBIN';
 const rpID = process.env.RP_ID || 'localhost';
 const origin = process.env.ORIGIN || 'http://localhost:3001';
 

@@ -6,9 +6,19 @@ import './Dashboard.css';
 const Dashboard = () => {
   const { user, logout, updateUser } = useAuth();
   const [pastes, setPastes] = useState([]);
-  const [selected, setSelected] = useState(null);
+  const [selectedPaste, setSelectedPaste] = useState(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [charCount, setCharCount] = useState(0);
+  const MAX_CHARS = 1024;
+
+  const handleContentChange = (e) => {
+    const newContent = e.target.value;
+    if (newContent.length <= MAX_CHARS) {
+      setContent(newContent);
+      setCharCount(newContent.length);
+    }
+  };
   const [isPublic, setIsPublic] = useState(true);
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
@@ -22,7 +32,7 @@ const Dashboard = () => {
       setPastes(res.data.data || []);
       if (res.data.data?.length) {
         const first = res.data.data[0];
-        setSelected(first);
+        setSelectedPaste(first);
         setTitle(first.title);
         setContent(first.content || '');
         setIsPublic(first.is_public);
@@ -42,7 +52,7 @@ const Dashboard = () => {
       const res = await pasteAPI.create({ title: 'Untitled Paste', content: '', isPublic: true });
       const newPaste = res.data.data;
       setPastes((prev) => [newPaste, ...prev]);
-      setSelected(newPaste);
+      setSelectedPaste(newPaste);
       setTitle(newPaste.title);
       setContent(newPaste.content || '');
       setIsPublic(newPaste.is_public);
@@ -55,7 +65,7 @@ const Dashboard = () => {
   };
 
   const selectPaste = (paste) => {
-    setSelected(paste);
+    setSelectedPaste(paste);
     setTitle(paste.title);
     setContent(paste.content || '');
     setIsPublic(paste.is_public);
@@ -64,17 +74,17 @@ const Dashboard = () => {
   };
 
   const savePaste = useCallback(async () => {
-    if (!selected) return;
+    if (!selectedPaste) return;
     setSaving(true);
     try {
-      const res = await pasteAPI.update(selected.slug, {
+      const res = await pasteAPI.update(selectedPaste.slug, {
         title: title || 'Untitled Paste',
         content,
         isPublic
       });
       const updated = res.data.data;
-      setPastes((prev) => prev.map((p) => (p.slug === selected.slug ? updated : p)));
-      setSelected((prev) => ({ ...prev, ...updated }));
+      setPastes((prev) => prev.map((p) => (p.slug === selectedPaste.slug ? updated : p)));
+      setSelectedPaste((prev) => ({ ...prev, ...updated }));
       setLastSaved(new Date());
       setDirty(false);
     } catch (err) {
@@ -82,12 +92,12 @@ const Dashboard = () => {
     } finally {
       setSaving(false);
     }
-  }, [selected, title, content, isPublic]);
+  }, [selectedPaste, title, content, isPublic]);
 
   useEffect(() => {
-    if (!selected) return;
+    if (!selectedPaste) return;
     setDirty(true);
-  }, [title, content, isPublic, selected]);
+  }, [title, content, isPublic, selectedPaste]);
 
   const copyLink = (slug) => {
     const link = `${window.location.origin}/p/${slug}`;
@@ -124,8 +134,13 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <header className="topbar">
-        <div className="brand">Pastebin Mini</div>
+        <div className="brand" onClick={() => window.location.href = '/'} style={{cursor: 'pointer'}}>
+           Pastebin Mini <span style={{fontSize: '0.6em', opacity: 0.7}}>// Feature</span>
+        </div>
         <div className="user-area">
+          <button className="neon-button small" style={{marginRight: '20px'}} onClick={() => window.location.href='/'}>
+             Back to Menu
+          </button>
           <div className="avatar">
             {user.profilePhoto ? <img src={user.profilePhoto} alt="avatar" /> : <span>{user.name?.[0] || '?'}</span>}
           </div>
@@ -160,7 +175,7 @@ const Dashboard = () => {
             {pastes.map((p) => (
               <div
                 key={p.slug}
-                className={`list-item ${selected?.slug === p.slug ? 'active' : ''}`}
+                className={`list-item ${selectedPaste?.slug === p.slug ? 'active' : ''}`}
                 onClick={() => selectPaste(p)}
               >
                 <div>
@@ -176,7 +191,7 @@ const Dashboard = () => {
         </aside>
 
         <main className="editor">
-          {selected ? (
+          {selectedPaste ? (
             <>
               <div className="editor__header">
                 <input
@@ -194,7 +209,7 @@ const Dashboard = () => {
                     />
                     <span>{isPublic ? 'Public' : 'Private'}</span>
                   </label>
-                  <button className="ghost" onClick={() => copyLink(selected.slug)}>Share link</button>
+                  <button className="ghost" onClick={() => copyLink(selectedPaste.slug)}>Share link</button>
                   <button className="primary-btn" onClick={savePaste} disabled={saving || !dirty}>
                     {saving ? 'Saving…' : dirty ? 'Save changes' : 'Saved'}
                   </button>
@@ -206,9 +221,17 @@ const Dashboard = () => {
               <textarea
                 className="editor__textarea"
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={handleContentChange}
                 placeholder="Write your paste here..."
               />
+              <div className="char-counter" style={{
+                textAlign: 'right',
+                fontSize: '0.85rem',
+                color: charCount > MAX_CHARS * 0.9 ? 'var(--primary-pink)' : 'rgba(255, 255, 255, 0.5)',
+                marginTop: '8px'
+              }}>
+                {charCount} / {MAX_CHARS} characters
+              </div>
             </>
           ) : (
             <div className="empty-state">

@@ -5,6 +5,7 @@ const migrate = async () => {
     console.log('Starting database migration for Pastebin with auth...');
 
     await pool.query('DROP TABLE IF EXISTS pastes CASCADE;');
+    await pool.query('DROP TABLE IF EXISTS short_urls CASCADE;');
     await pool.query('DROP TABLE IF EXISTS passkey_credentials CASCADE;');
     await pool.query('DROP TABLE IF EXISTS passkey_challenges CASCADE;');
     await pool.query('DROP TABLE IF EXISTS users CASCADE;');
@@ -60,6 +61,18 @@ const migrate = async () => {
     console.log('✓ pastes table created');
 
     await pool.query(`
+      CREATE TABLE IF NOT EXISTS short_urls (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        original_url TEXT NOT NULL,
+        short_code VARCHAR(16) UNIQUE NOT NULL,
+        clicks INTEGER DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log('✓ short_urls table created');
+
+    await pool.query(`
       CREATE OR REPLACE FUNCTION update_pastes_updated_at()
       RETURNS TRIGGER AS $$
       BEGIN
@@ -85,6 +98,8 @@ const migrate = async () => {
       CREATE INDEX IF NOT EXISTS idx_passkey_credentials_user_id ON passkey_credentials(user_id);
       CREATE INDEX IF NOT EXISTS idx_passkey_credentials_credential_id ON passkey_credentials(credential_id);
       CREATE INDEX IF NOT EXISTS idx_passkey_challenges_expires_at ON passkey_challenges(expires_at);
+      CREATE INDEX IF NOT EXISTS idx_short_urls_short_code ON short_urls(short_code);
+      CREATE INDEX IF NOT EXISTS idx_short_urls_user_id ON short_urls(user_id);
     `);
     console.log('✓ indexes created');
 

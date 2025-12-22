@@ -27,6 +27,28 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/profile', require('./routes/profile'));
 app.use('/api/pastes', require('./routes/pastes'));
+app.use('/api/urls', require('./routes/urls'));
+
+// URL Shortener Redirect Route
+const pool = require('./config/database');
+app.get('/u/:code', async (req, res) => {
+  try {
+    const { code } = req.params;
+    const result = await pool.query(
+      'UPDATE short_urls SET clicks = clicks + 1 WHERE short_code = $1 RETURNING original_url',
+      [code]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).send('Short URL not found');
+    }
+
+    res.redirect(result.rows[0].original_url);
+  } catch (error) {
+    console.error('Redirect error:', error);
+    res.status(500).send('Server error');
+  }
+});
 
 app.use((req, res) => {
   res.status(404).json({

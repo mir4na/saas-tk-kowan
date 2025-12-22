@@ -17,7 +17,7 @@ const Register = () => {
     setLoading(true);
     try {
       await register(name, email);
-      navigate('/dashboard');
+      navigate('/login');
     } catch (err) {
       setError('Registration failed. Try a different email or passkey.');
       console.error(err);
@@ -27,40 +27,43 @@ const Register = () => {
   };
 
   return (
-    <div className="auth">
-      <div className="auth-card">
-        <h1>Register</h1>
-        <p className="muted">Create an account with your passkey.</p>
-        <form onSubmit={handleSubmit}>
-          <label className="field">
-            <span>Name</span>
+    <div className="auth-container">
+      <div className="auth-box">
+        <h1 className="auth-title">Create Account</h1>
+        <p className="auth-subtitle">Join the future with quantum-secure authentication</p>
+        
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="input-group">
             <input
               type="text"
               required
-              placeholder="Your name"
+              placeholder="Full Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
-          </label>
+          </div>
 
-          <label className="field">
-            <span>Email</span>
+          <div className="input-group">
             <input
               type="email"
               required
-              placeholder="you@example.com"
+              placeholder="Email Address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-          </label>
+          </div>
 
-          {error && <div className="error">{error}</div>}
+          {error && <div className="error-message">{error}</div>}
 
           <button className="primary-btn" type="submit" disabled={loading}>
-            {loading ? 'Creating account...' : 'Register with Passkey'}
+            {loading ? '⚡ Creating Account...' : '🚀 Register with Passkey'}
           </button>
         </form>
-        <p className="muted small">Already have an account? <Link to="/login">Login</Link></p>
+        
+        <div className="auth-footer">
+          Already have an account?
+          <Link to="/login" className="auth-link">Sign In</Link>
+        </div>
       </div>
     </div>
   );

@@ -16,7 +16,7 @@ const Login = () => {
     setLoading(true);
     try {
       await login(email);
-      navigate('/dashboard');
+      navigate('/');
     } catch (err) {
       setError('Login failed. Please ensure your passkey is registered.');
       console.error(err);
@@ -26,29 +26,33 @@ const Login = () => {
   };
 
   return (
-    <div className="auth">
-      <div className="auth-card">
-        <h1>Login</h1>
-        <p className="muted">Use your passkey to sign in.</p>
-        <form onSubmit={handleSubmit}>
-          <label className="field">
-            <span>Email</span>
+    <div className="auth-container">
+      <div className="auth-box">
+        <h1 className="auth-title">Welcome Back</h1>
+        <p className="auth-subtitle">Access your quantum-secured workspace</p>
+        
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="input-group">
             <input
               type="email"
               required
-              placeholder="you@example.com"
+              placeholder="Email Address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-          </label>
+          </div>
 
-          {error && <div className="error">{error}</div>}
+          {error && <div className="error-message">{error}</div>}
 
           <button className="primary-btn" type="submit" disabled={loading}>
-            {loading ? 'Signing in...' : 'Login with Passkey'}
+            {loading ? '⚡ Authenticating...' : '🔐 Login with Passkey'}
           </button>
         </form>
-        <p className="muted small">No account? <Link to="/register">Register</Link></p>
+        
+        <div className="auth-footer">
+          Don't have an account?
+          <Link to="/register" className="auth-link">Create One</Link>
+        </div>
       </div>
     </div>
   );
