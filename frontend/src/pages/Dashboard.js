@@ -1,20 +1,35 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { pasteAPI, profileAPI } from '../services/api';
+import { pasteAPI } from '../services/api';
+import SetPasswordModal from '../components/SetPasswordModal';
+import Modal from '../components/Modal';
 import './Dashboard.css';
 
 const Dashboard = () => {
-  const { user, logout, updateUser } = useAuth();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
   const [pastes, setPastes] = useState([]);
-  const [selected, setSelected] = useState(null);
+  const [selectedPaste, setSelectedPaste] = useState(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [charCount, setCharCount] = useState(0);
+  const MAX_CHARS = 1024;
+
+  const handleContentChange = (e) => {
+    const newContent = e.target.value;
+    if (newContent.length <= MAX_CHARS) {
+      setContent(newContent);
+      setCharCount(newContent.length);
+    }
+  };
   const [isPublic, setIsPublic] = useState(true);
+  const [password, setPassword] = useState('');
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
-  const [avatarUploading, setAvatarUploading] = useState(false);
   const [dirty, setDirty] = useState(false);
-  const fileInputRef = useRef(null);
+  const [showSetPasswordModal, setShowSetPasswordModal] = useState(false);
+  const [showFeatureModal, setShowFeatureModal] = useState(false);
 
   const loadPastes = useCallback(async () => {
     try {
@@ -22,7 +37,7 @@ const Dashboard = () => {
       setPastes(res.data.data || []);
       if (res.data.data?.length) {
         const first = res.data.data[0];
-        setSelected(first);
+        setSelectedPaste(first);
         setTitle(first.title);
         setContent(first.content || '');
         setIsPublic(first.is_public);
@@ -42,10 +57,11 @@ const Dashboard = () => {
       const res = await pasteAPI.create({ title: 'Untitled Paste', content: '', isPublic: true });
       const newPaste = res.data.data;
       setPastes((prev) => [newPaste, ...prev]);
-      setSelected(newPaste);
+      setSelectedPaste(newPaste);
       setTitle(newPaste.title);
       setContent(newPaste.content || '');
       setIsPublic(newPaste.is_public);
+      setPassword('');
       setDirty(false);
     } catch (err) {
       console.error('Failed to create paste', err);
@@ -55,26 +71,40 @@ const Dashboard = () => {
   };
 
   const selectPaste = (paste) => {
-    setSelected(paste);
+    setSelectedPaste(paste);
     setTitle(paste.title);
     setContent(paste.content || '');
     setIsPublic(paste.is_public);
+    setPassword('');
     setLastSaved(null);
     setDirty(false);
   };
 
-  const savePaste = useCallback(async () => {
-    if (!selected) return;
+  const savePaste = useCallback(async (overrides = {}) => {
+    if (!selectedPaste) return;
+    
+    // Determine values to save: use overrides if provided, otherwise current state
+    const nextTitle = overrides.title !== undefined ? overrides.title : title;
+    const nextContent = overrides.content !== undefined ? overrides.content : content;
+    const nextIsPublic = overrides.isPublic !== undefined ? overrides.isPublic : isPublic;
+    const nextPassword = overrides.password !== undefined ? overrides.password : password;
+
+    if (!nextIsPublic && !nextPassword && !selectedPaste.has_password) {
+      setShowSetPasswordModal(true);
+      return;
+    }
+    
     setSaving(true);
     try {
-      const res = await pasteAPI.update(selected.slug, {
-        title: title || 'Untitled Paste',
-        content,
-        isPublic
+      const res = await pasteAPI.update(selectedPaste.slug, {
+        title: nextTitle || 'Untitled Paste',
+        content: nextContent,
+        isPublic: nextIsPublic,
+        password: !nextIsPublic && nextPassword ? nextPassword : undefined
       });
       const updated = res.data.data;
-      setPastes((prev) => prev.map((p) => (p.slug === selected.slug ? updated : p)));
-      setSelected((prev) => ({ ...prev, ...updated }));
+      setPastes((prev) => prev.map((p) => (p.slug === selectedPaste.slug ? updated : p)));
+      setSelectedPaste((prev) => ({ ...prev, ...updated }));
       setLastSaved(new Date());
       setDirty(false);
     } catch (err) {
@@ -82,69 +112,59 @@ const Dashboard = () => {
     } finally {
       setSaving(false);
     }
-  }, [selected, title, content, isPublic]);
+  }, [selectedPaste, title, content, isPublic, password]);
 
   useEffect(() => {
-    if (!selected) return;
+    if (!selectedPaste) return;
     setDirty(true);
-  }, [title, content, isPublic, selected]);
+  }, [title, content, isPublic, password, selectedPaste]);
 
   const copyLink = (slug) => {
     const link = `${window.location.origin}/p/${slug}`;
     navigator.clipboard.writeText(link);
   };
 
-  const onAvatarChange = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const formData = new FormData();
-    formData.append('photo', file);
-    setAvatarUploading(true);
-    try {
-      const res = await profileAPI.updatePhoto(formData);
-      updateUser(res.data.data.user);
-    } catch (err) {
-      console.error('Failed to upload avatar', err);
-    } finally {
-      setAvatarUploading(false);
+  const handleTogglePublic = async (e) => {
+    const isNowPublic = e.target.checked;
+    if (!isNowPublic) {
+      if (!password && !selectedPaste?.has_password) {
+        setShowSetPasswordModal(true);
+        return; 
+      }
     }
+    setIsPublic(isNowPublic);
+    // Auto-save logic for better UX
+    await savePaste({ isPublic: isNowPublic });
   };
 
-  const onNameChange = async () => {
-    const newName = prompt('Update display name', user.name);
-    if (!newName) return;
-    try {
-      const res = await profileAPI.updateName({ name: newName });
-      updateUser(res.data.data.user);
-    } catch (err) {
-      console.error('Failed to update name', err);
-    }
+  const handleSetPassword = async (pass) => {
+    setPassword(pass);
+    setIsPublic(false);
+    setShowSetPasswordModal(false);
+    // Immediately sync to database
+    await savePaste({ isPublic: false, password: pass });
+  };
+
+  const handleQuickclipClick = () => {
+    setShowFeatureModal(false);
+    navigate('/pastebin');
+  };
+
+  const handleShortenerClick = () => {
+    setShowFeatureModal(false);
+    navigate('/shortener');
   };
 
   return (
     <div className="dashboard">
-      <header className="topbar">
-        <div className="brand">Pastebin Mini</div>
-        <div className="user-area">
-          <div className="avatar">
-            {user.profilePhoto ? <img src={user.profilePhoto} alt="avatar" /> : <span>{user.name?.[0] || '?'}</span>}
-          </div>
-          <div className="user-meta">
-            <strong>{user.name}</strong>
-            <div className="user-actions">
-              <button className="link" onClick={() => fileInputRef.current?.click()}>Upload avatar</button>
-              <button className="link" onClick={onNameChange}>Edit name</button>
-              <button className="link" onClick={logout}>Logout</button>
-            </div>
-          </div>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={onAvatarChange}
-            style={{ display: 'none' }}
-            accept="image/*"
-          />
-        </div>
+      <header className="dashboard-topbar">
+        <div className="brand-logo">⚡ QUICKCLIP</div>
+        <nav className="nav-links">
+          <Link to="/" className="app-nav-link">Home</Link>
+          <button onClick={() => setShowFeatureModal(true)} className="app-nav-link">Features</button>
+          <Link to="/profile" className="app-nav-link">Profile</Link>
+          <button onClick={logout} className="app-nav-link logout-link">Logout</button>
+        </nav>
       </header>
 
       <div className="layout">
@@ -160,7 +180,7 @@ const Dashboard = () => {
             {pastes.map((p) => (
               <div
                 key={p.slug}
-                className={`list-item ${selected?.slug === p.slug ? 'active' : ''}`}
+                className={`list-item ${selectedPaste?.slug === p.slug ? 'active' : ''}`}
                 onClick={() => selectPaste(p)}
               >
                 <div>
@@ -176,7 +196,7 @@ const Dashboard = () => {
         </aside>
 
         <main className="editor">
-          {selected ? (
+          {selectedPaste ? (
             <>
               <div className="editor__header">
                 <input
@@ -190,11 +210,29 @@ const Dashboard = () => {
                     <input
                       type="checkbox"
                       checked={isPublic}
-                      onChange={(e) => setIsPublic(e.target.checked)}
+                      onChange={handleTogglePublic}
                     />
                     <span>{isPublic ? 'Public' : 'Private'}</span>
                   </label>
-                  <button className="ghost" onClick={() => copyLink(selected.slug)}>Share link</button>
+                  {!isPublic && (
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Set password (required for private)"
+                      style={{
+                        padding: '8px 12px',
+                        fontSize: '0.9rem',
+                        background: 'rgba(0, 0, 0, 0.3)',
+                        border: '1px solid rgba(0, 217, 255, 0.3)',
+                        borderRadius: '8px',
+                        color: 'white',
+                        outline: 'none',
+                        minWidth: '200px'
+                      }}
+                    />
+                  )}
+                  <button className="ghost" onClick={() => copyLink(selectedPaste.slug)}>Share link</button>
                   <button className="primary-btn" onClick={savePaste} disabled={saving || !dirty}>
                     {saving ? 'Saving…' : dirty ? 'Save changes' : 'Saved'}
                   </button>
@@ -206,9 +244,17 @@ const Dashboard = () => {
               <textarea
                 className="editor__textarea"
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={handleContentChange}
                 placeholder="Write your paste here..."
               />
+              <div className="char-counter" style={{
+                textAlign: 'right',
+                fontSize: '0.85rem',
+                color: charCount > MAX_CHARS * 0.9 ? 'var(--primary-pink)' : 'rgba(255, 255, 255, 0.5)',
+                marginTop: '8px'
+              }}>
+                {charCount} / {MAX_CHARS} characters
+              </div>
             </>
           ) : (
             <div className="empty-state">
@@ -218,7 +264,29 @@ const Dashboard = () => {
           )}
         </main>
       </div>
-      {avatarUploading && <div className="toast">Uploading avatar...</div>}
+      <SetPasswordModal
+        isOpen={showSetPasswordModal}
+        onClose={() => setShowSetPasswordModal(false)}
+        onSet={handleSetPassword}
+      />
+      <Modal isOpen={showFeatureModal} onClose={() => setShowFeatureModal(false)}>
+        <div className="feature-selection">
+          <h2>Choose Your Tool</h2>
+          <p>Select a feature to get started</p>
+          <div className="feature-options">
+            <div className="feature-option" onClick={handleQuickclipClick}>
+              <div className="feature-option-icon">📝</div>
+              <div className="feature-option-title">Pastebin</div>
+              <p className="feature-option-desc">Share code snippets</p>
+            </div>
+            <div className="feature-option" onClick={handleShortenerClick}>
+              <div className="feature-option-icon">🔗</div>
+              <div className="feature-option-title">URL Shortener</div>
+              <p className="feature-option-desc">Create short links</p>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

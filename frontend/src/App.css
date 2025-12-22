@@ -1,3 +1,4 @@
+/* Cleaning up default App styles to defer to index.css */
 .App {
   min-height: 100vh;
 }

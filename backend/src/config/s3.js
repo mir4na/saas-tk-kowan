@@ -11,7 +11,7 @@ const s3Client = new S3Client({
   }
 });
 
-const bucketName = process.env.AWS_S3_BUCKET || 'nottu-profiles-prod-272416601646';
+const bucketName = process.env.AWS_S3_BUCKET;
 
 const uploadToS3 = async (key, buffer, contentType) => {
   const command = new PutObjectCommand({
