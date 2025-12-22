@@ -3,6 +3,26 @@
   /* Background handled by body::before/after in index.css, just need transparency */
   background: transparent;
   color: var(--text-color);
+  --dashboard-nav-height: 80px;
+  padding-top: var(--dashboard-nav-height);
+}
+
+.dashboard-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--dashboard-nav-height);
+  padding: 20px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(10, 10, 31, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  z-index: 1000;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .topbar {
@@ -81,7 +101,7 @@
 .layout {
   display: grid;
   grid-template-columns: 280px 1fr;
-  min-height: calc(100vh - 74px); /* Adjusted for topbar height */
+  min-height: calc(100vh - var(--dashboard-nav-height));
 }
 
 .sidebar {
@@ -146,6 +166,7 @@
   background: rgba(0, 0, 0, 0.3);
   color: #fff;
   font-size: 1.1rem;
+  box-sizing: border-box;
 }
 
 .title-input:focus {

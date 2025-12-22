@@ -73,6 +73,22 @@ h1, h2, h3, h4 {
   letter-spacing: -0.5px;
 }
 
+.brand-logo {
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--primary-cyan), var(--primary-purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1px;
+}
+
+.nav-links {
+  display: flex;
+  gap: clamp(15px, 3vw, 32px);
+  align-items: center;
+}
+
 .app-nav-link {
   color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
@@ -105,6 +121,16 @@ h1, h2, h3, h4 {
 .app-nav-link:hover {
   color: var(--primary-cyan);
   text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+}
+
+.nav-disabled {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
+.logout-link {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .gradient-text {

@@ -1,12 +1,14 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { pasteAPI, profileAPI } from '../services/api';
-import ProfileEditModal from '../components/ProfileEditModal';
+import { pasteAPI } from '../services/api';
 import SetPasswordModal from '../components/SetPasswordModal';
+import Modal from '../components/Modal';
 import './Dashboard.css';
 
 const Dashboard = () => {
-  const { user, logout, updateUser } = useAuth();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
   const [pastes, setPastes] = useState([]);
   const [selectedPaste, setSelectedPaste] = useState(null);
   const [title, setTitle] = useState('');
@@ -25,11 +27,9 @@ const Dashboard = () => {
   const [password, setPassword] = useState('');
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
-  const [avatarUploading, setAvatarUploading] = useState(false);
   const [dirty, setDirty] = useState(false);
-  const [showProfileModal, setShowProfileModal] = useState(false);
   const [showSetPasswordModal, setShowSetPasswordModal] = useState(false);
-  const fileInputRef = useRef(null);
+  const [showFeatureModal, setShowFeatureModal] = useState(false);
 
   const loadPastes = useCallback(async () => {
     try {
@@ -124,29 +124,6 @@ const Dashboard = () => {
     navigator.clipboard.writeText(link);
   };
 
-  const handleProfileSave = async ({ name, photoFile }) => {
-    setAvatarUploading(true);
-    try {
-      if (photoFile) {
-        const formData = new FormData();
-        formData.append('photo', photoFile);
-        const photoRes = await profileAPI.updatePhoto(formData);
-        updateUser(photoRes.data.data.user);
-      }
-      
-      if (name && name !== user.name) {
-        const nameRes = await profileAPI.updateName({ name });
-        updateUser(nameRes.data.data.user);
-      }
-      
-      setShowProfileModal(false);
-    } catch (err) {
-      console.error('Failed to update profile', err);
-    } finally {
-      setAvatarUploading(false);
-    }
-  };
-
   const handleTogglePublic = async (e) => {
     const isNowPublic = e.target.checked;
     if (!isNowPublic) {
@@ -168,27 +145,26 @@ const Dashboard = () => {
     await savePaste({ isPublic: false, password: pass });
   };
 
+  const handleQuickclipClick = () => {
+    setShowFeatureModal(false);
+    navigate('/pastebin');
+  };
+
+  const handleShortenerClick = () => {
+    setShowFeatureModal(false);
+    navigate('/shortener');
+  };
+
   return (
     <div className="dashboard">
-      <header className="topbar">
-        <div className="brand" onClick={() => window.location.href = '/'} style={{cursor: 'pointer'}}>
-           QuickClip Mini <span style={{fontSize: '0.6em', opacity: 0.7}}>// Feature</span>
-        </div>
-        <div className="user-area">
-          <button className="neon-button small" style={{marginRight: '20px'}} onClick={() => window.location.href='/'}>
-             Back to Menu
-          </button>
-          <div className="avatar">
-            {user.profilePhoto ? <img src={user.profilePhoto} alt="avatar" /> : <span>{user.name?.[0] || '?'}</span>}
-          </div>
-          <div className="user-meta">
-            <strong>{user.name}</strong>
-            <div className="user-actions">
-              <button className="link" onClick={() => setShowProfileModal(true)}>Edit profile</button>
-              <button className="link" onClick={logout}>Logout</button>
-            </div>
-          </div>
-        </div>
+      <header className="dashboard-topbar">
+        <div className="brand-logo">⚡ QUICKCLIP</div>
+        <nav className="nav-links">
+          <Link to="/" className="app-nav-link">Home</Link>
+          <button onClick={() => setShowFeatureModal(true)} className="app-nav-link">Features</button>
+          <Link to="/profile" className="app-nav-link">Profile</Link>
+          <button onClick={logout} className="app-nav-link logout-link">Logout</button>
+        </nav>
       </header>
 
       <div className="layout">
@@ -293,13 +269,24 @@ const Dashboard = () => {
         onClose={() => setShowSetPasswordModal(false)}
         onSet={handleSetPassword}
       />
-      <ProfileEditModal
-        isOpen={showProfileModal}
-        onClose={() => setShowProfileModal(false)}
-        user={user}
-        onSave={handleProfileSave}
-        uploading={avatarUploading}
-      />
+      <Modal isOpen={showFeatureModal} onClose={() => setShowFeatureModal(false)}>
+        <div className="feature-selection">
+          <h2>Choose Your Tool</h2>
+          <p>Select a feature to get started</p>
+          <div className="feature-options">
+            <div className="feature-option" onClick={handleQuickclipClick}>
+              <div className="feature-option-icon">📝</div>
+              <div className="feature-option-title">Pastebin</div>
+              <p className="feature-option-desc">Share code snippets</p>
+            </div>
+            <div className="feature-option" onClick={handleShortenerClick}>
+              <div className="feature-option-icon">🔗</div>
+              <div className="feature-option-title">URL Shortener</div>
+              <p className="feature-option-desc">Create short links</p>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

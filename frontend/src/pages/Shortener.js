@@ -247,6 +247,7 @@ function Shortener() {
         <nav className="nav-links">
           <Link to="/" className="app-nav-link">Home</Link>
           <button onClick={() => setShowFeatureModal(true)} className="app-nav-link">Features</button>
+          <Link to="/profile" className="app-nav-link">Profile</Link>
           <button onClick={logout} className="app-nav-link logout-link">Logout</button>
         </nav>
       </header>
@@ -439,6 +440,7 @@ function Shortener() {
           </div>
         </div>
       </Modal>
+
     </div>
   );
 }

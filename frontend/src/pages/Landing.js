@@ -178,12 +178,14 @@ const Landing = () => {
           {isAuthenticated ? (
             <>
               <button onClick={() => setShowFeatureModal(true)} className="app-nav-link">Features</button>
+              <Link to="/profile" className="app-nav-link">Profile</Link>
               <button onClick={logout} className="app-nav-link logout-link">Logout</button>
             </>
           ) : (
             <>
               <Link to="/login" className="app-nav-link">Login</Link>
               <Link to="/register" className="app-nav-link">Register</Link>
+              <span className="app-nav-link nav-disabled">Profile</span>
             </>
           )}
         </nav>

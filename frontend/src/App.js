@@ -8,6 +8,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Paste from './pages/Paste';
 import Shortener from './pages/Shortener';
+import Profile from './pages/Profile';
 
 import './App.css';
 
@@ -81,6 +82,24 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Shortener />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/profile/:id"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
                   </ProtectedRoute>
                 }
               />
