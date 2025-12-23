@@ -38,7 +38,19 @@ const getPaste = async (req, res) => {
 
     if (!paste.is_public && !isOwner) {
       if (paste.password_hash) {
-        return res.status(403).json({ success: false, message: 'Password required', requiresPassword: true });
+        return res.status(403).json({
+          success: false,
+          message: 'Password required',
+          requiresPassword: true,
+          data: {
+            slug: paste.slug,
+            title: paste.title,
+            created_at: paste.created_at,
+            owner_name: paste.owner_name,
+            owner_photo: paste.owner_photo,
+            owner_description: paste.owner_description
+          }
+        });
       }
       return res.status(403).json({ success: false, message: 'Private paste' });
     }

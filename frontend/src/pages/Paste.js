@@ -21,6 +21,9 @@ const Paste = () => {
         setPaste(res.data.data);
       } catch (err) {
         if (err.response?.data?.requiresPassword) {
+          if (err.response.data.data) {
+            setPaste(err.response.data.data);
+          }
           setShowPasswordModal(true);
           setLoading(false);
         } else {

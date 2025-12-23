@@ -27,7 +27,6 @@ const Dashboard = () => {
   const [password, setPassword] = useState('');
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
-  const [dirty, setDirty] = useState(false);
   const [showSetPasswordModal, setShowSetPasswordModal] = useState(false);
   const [showFeatureModal, setShowFeatureModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -68,7 +67,6 @@ const Dashboard = () => {
       setContent(newPaste.content || '');
       setIsPublic(newPaste.is_public);
       setPassword('');
-      setDirty(false);
     } catch (err) {
       console.error('Failed to create paste', err);
     } finally {
@@ -83,13 +81,11 @@ const Dashboard = () => {
     setIsPublic(paste.is_public);
     setPassword('');
     setLastSaved(null);
-    setDirty(false);
   };
 
   const savePaste = useCallback(async (overrides = {}) => {
     if (!selectedPaste) return;
-    
-    // Determine values to save: use overrides if provided, otherwise current state
+
     const nextTitle = overrides.title !== undefined ? overrides.title : title;
     const nextContent = overrides.content !== undefined ? overrides.content : content;
     const nextIsPublic = overrides.isPublic !== undefined ? overrides.isPublic : isPublic;
@@ -99,7 +95,7 @@ const Dashboard = () => {
       setShowSetPasswordModal(true);
       return;
     }
-    
+
     setSaving(true);
     try {
       const res = await pasteAPI.update(selectedPaste.slug, {
@@ -112,7 +108,6 @@ const Dashboard = () => {
       setPastes((prev) => prev.map((p) => (p.slug === selectedPaste.slug ? updated : p)));
       setSelectedPaste((prev) => ({ ...prev, ...updated }));
       setLastSaved(new Date());
-      setDirty(false);
     } catch (err) {
       console.error('Failed to save paste', err);
     } finally {
@@ -122,8 +117,13 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!selectedPaste) return;
-    setDirty(true);
-  }, [title, content, isPublic, password, selectedPaste]);
+
+    const timeoutId = setTimeout(() => {
+      savePaste();
+    }, 2000);
+
+    return () => clearTimeout(timeoutId);
+  }, [title, content]);
 
   const copyLink = (slug) => {
     const link = `${window.location.origin}/p/${slug}`;
@@ -135,7 +135,7 @@ const Dashboard = () => {
     if (!isNowPublic) {
       if (!password && !selectedPaste?.has_password) {
         setShowSetPasswordModal(true);
-        return; 
+        return;
       }
     }
     setIsPublic(isNowPublic);
@@ -181,7 +181,6 @@ const Dashboard = () => {
       }
       setPassword('');
       setLastSaved(null);
-      setDirty(false);
       setShowDeleteModal(false);
     } catch (err) {
       console.error('Failed to delete paste', err);
@@ -243,32 +242,28 @@ const Dashboard = () => {
                 <div className="editor__controls">
                   <div className="controls-actions">
                     <div className="toggle-switch-wrapper" onClick={() => handleTogglePublic({ target: { checked: !isPublic } })}>
-                       <div className={`toggle-switch ${isPublic ? 'active' : ''}`}>
-                         <div className="toggle-knob"></div>
-                       </div>
-                       <span className="toggle-label">{isPublic ? 'Public' : 'Private'}</span>
+                      <div className={`toggle-switch ${isPublic ? 'active' : ''}`}>
+                        <div className="toggle-knob"></div>
+                      </div>
+                      <span className="toggle-label">{isPublic ? 'Public' : 'Private'}</span>
                     </div>
 
-                    <button 
-                      className="ghost change-pass-btn" 
-                      onClick={() => setShowSetPasswordModal(true)}
-                    >
-                      Change Password
-                    </button>
+                    {!isPublic && (
+                      <button
+                        className="ghost change-pass-btn"
+                        onClick={() => setShowSetPasswordModal(true)}
+                      >
+                        Change Password
+                      </button>
+                    )}
 
                     <button className="ghost danger-btn" onClick={() => setShowDeleteModal(true)} disabled={saving}>
                       Delete
                     </button>
                   </div>
-
-                  <div className="controls-save-section">
-                     <button className="primary-btn save-btn" onClick={savePaste} disabled={saving || !dirty}>
-                       {saving ? 'SAVING…' : dirty ? 'SAVE CHANGES' : 'SAVED'}
-                     </button>
-                     <div className="editor__status">
-                       {saving ? 'Saving changes…' : lastSaved ? `Last saved at ${lastSaved.toLocaleTimeString()}` : dirty ? 'Unsaved changes' : 'All changes saved'}
-                     </div>
-                  </div>
+                </div>
+                <div className="editor__status">
+                      {saving ? 'Saving changes…' : lastSaved ? `Last saved at ${lastSaved.toLocaleTimeString()}` : 'Auto-save enabled'}
                 </div>
               </div>
               <textarea
