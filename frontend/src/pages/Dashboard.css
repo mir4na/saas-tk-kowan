@@ -151,9 +151,10 @@ g.dashboard {
 
 .editor {
   padding: 20px;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
+  align-items: center; /* Center content horizontally */
+  overflow-y: auto; /* Allow scrolling content if needed, though goal is single screen */
 }
 
 .editor__header {
@@ -163,6 +164,8 @@ g.dashboard {
   align-items: center;
   margin-bottom: 20px;
   flex-wrap: wrap;
+  width: 100%;
+  max-width: 900px; /* Constrain width */
 }
 
 .title-input {
@@ -197,8 +200,10 @@ g.dashboard {
 
 .editor__textarea {
   width: 100%;
+  max-width: 900px; /* Constrain width to make it more box-like */
+  height: calc(100vh - 200px); /* Adjust height to fit screen */
+  min-height: 400px;
   flex: 1;
-  min-height: 300px;
   padding: 20px;
   border-radius: 15px;
   background: rgba(0, 0, 0, 0.3);
@@ -219,7 +224,9 @@ g.dashboard {
 .empty-state {
   display: grid;
   place-items: center;
-  height: 70vh;
+  height: 100%; /* Fill available space */
+  width: 100%;
+  max-width: 900px;
   color: rgba(255,255,255,0.4);
   border: 2px dashed rgba(255,255,255,0.1);
   border-radius: 20px;

@@ -4,7 +4,7 @@ const { uploadToS3, deleteFromS3, getSignedUrlForObject } = require('../config/s
 
 const updateName = async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name, description } = req.body;
 
     if (!name || name.trim().length === 0) {
       return res.status(400).json({
@@ -13,9 +13,16 @@ const updateName = async (req, res) => {
       });
     }
 
+    if (description && description.length > 60) {
+      return res.status(400).json({
+        success: false,
+        message: 'Description must be 60 characters or less.'
+      });
+    }
+
     const result = await pool.query(
-      'UPDATE users SET name = $1 WHERE id = $2 RETURNING id, email, name, profile_photo',
-      [name.trim(), req.user.id]
+      'UPDATE users SET name = $1, description = $2 WHERE id = $3 RETURNING id, email, name, description, profile_photo',
+      [name.trim(), description || '', req.user.id]
     );
 
     const user = result.rows[0];
@@ -27,12 +34,13 @@ const updateName = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Name updated successfully.',
+      message: 'Profile updated successfully.',
       data: {
         user: {
           id: user.id,
           email: user.email,
           name: user.name,
+          description: user.description,
           profilePhoto: profilePhoto
         }
       }

@@ -52,22 +52,38 @@ const Paste = () => {
   return (
     <div className="paste-page">
       {paste && (
-        <>
+        <div className="paste-container">
           <header className="paste-header">
-            <div>
-              <p className="eyebrow">QuickClip Mini</p>
-              <h1>{paste.title}</h1>
-              <div className="muted small">/{paste.slug}</div>
+            <span className="eyebrow">QuickClip Mini</span>
+            <h1 className="paste-title">{paste.title}</h1>
+            <div className="paste-meta">
+              <span className="author">
+                by <strong>{paste.owner_name || 'Anonymous'}</strong>
+              </span>
+              <span className="separator">•</span>
+              <span className="date">{new Date(paste.created_at).toLocaleDateString()}</span>
+              <span className="separator">•</span>
+              <span className={`pill ${paste.is_public ? 'public' : 'private'}`}>
+                {paste.is_public ? 'Public' : 'Private'}
+              </span>
             </div>
-            <div className="pill">{paste.is_public ? 'Public' : 'Private'}</div>
           </header>
+          
           <article className="paste-content">
+            <div className="line-numbers">
+              {paste.content?.split('\n').map((_, i) => (
+                <span key={i}>{i + 1}</span>
+              ))}
+            </div>
             <pre>{paste.content || 'No content'}</pre>
           </article>
+          
           <footer className="paste-footer">
-            <Link to="/">Back to home</Link>
+            <Link to="/" className="home-link">
+              ← Create your own paste
+            </Link>
           </footer>
-        </>
+        </div>
       )}
       <PasswordModal
         isOpen={showPasswordModal}
