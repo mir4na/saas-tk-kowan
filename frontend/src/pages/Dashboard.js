@@ -30,6 +30,7 @@ const Dashboard = () => {
   const [dirty, setDirty] = useState(false);
   const [showSetPasswordModal, setShowSetPasswordModal] = useState(false);
   const [showFeatureModal, setShowFeatureModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const loadPastes = useCallback(async () => {
     try {
@@ -155,6 +156,35 @@ const Dashboard = () => {
     navigate('/shortener');
   };
 
+  const deleteSelectedPaste = async () => {
+    if (!selectedPaste) return;
+    setSaving(true);
+    try {
+      await pasteAPI.remove(selectedPaste.slug);
+      setPastes((prev) => prev.filter((p) => p.slug !== selectedPaste.slug));
+      const next = pastes.find((p) => p.slug !== selectedPaste.slug) || null;
+      if (next) {
+        setSelectedPaste(next);
+        setTitle(next.title);
+        setContent(next.content || '');
+        setIsPublic(next.is_public);
+      } else {
+        setSelectedPaste(null);
+        setTitle('');
+        setContent('');
+        setIsPublic(true);
+      }
+      setPassword('');
+      setLastSaved(null);
+      setDirty(false);
+      setShowDeleteModal(false);
+    } catch (err) {
+      console.error('Failed to delete paste', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="dashboard">
       <header className="dashboard-topbar">
@@ -233,6 +263,9 @@ const Dashboard = () => {
                     />
                   )}
                   <button className="ghost" onClick={() => copyLink(selectedPaste.slug)}>Share link</button>
+                  <button className="ghost" onClick={() => setShowDeleteModal(true)} disabled={saving}>
+                    Delete
+                  </button>
                   <button className="primary-btn" onClick={savePaste} disabled={saving || !dirty}>
                     {saving ? 'Saving…' : dirty ? 'Save changes' : 'Saved'}
                   </button>
@@ -269,6 +302,20 @@ const Dashboard = () => {
         onClose={() => setShowSetPasswordModal(false)}
         onSet={handleSetPassword}
       />
+      <Modal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
+        <div className="feature-selection">
+          <h2>Delete paste?</h2>
+          <p>This action cannot be undone.</p>
+          <div className="feature-options">
+            <button className="ghost" onClick={() => setShowDeleteModal(false)} disabled={saving}>
+              Cancel
+            </button>
+            <button className="primary-btn" onClick={deleteSelectedPaste} disabled={saving}>
+              {saving ? 'Deleting…' : 'Delete'}
+            </button>
+          </div>
+        </div>
+      </Modal>
       <Modal isOpen={showFeatureModal} onClose={() => setShowFeatureModal(false)}>
         <div className="feature-selection">
           <h2>Choose Your Tool</h2>

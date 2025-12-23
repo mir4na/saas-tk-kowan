@@ -1,5 +1,5 @@
 const express = require('express');
-const { listPastes, getPaste, createPaste, updatePaste, verifyPastePassword } = require('../controllers/pasteController');
+const { listPastes, getPaste, createPaste, updatePaste, verifyPastePassword, deletePaste } = require('../controllers/pasteController');
 const { authenticate, optionalAuth } = require('../middleware/auth');
 
 const router = express.Router();
@@ -18,5 +18,6 @@ router.post('/', authenticate, validateContentLength, createPaste);
 router.get('/:slug', optionalAuth, getPaste);
 router.post('/:slug/verify', optionalAuth, verifyPastePassword);
 router.put('/:slug', authenticate, validateContentLength, updatePaste);
+router.delete('/:slug', authenticate, deletePaste);
 
 module.exports = router;

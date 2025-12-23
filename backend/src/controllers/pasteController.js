@@ -213,4 +213,32 @@ const updatePaste = async (req, res) => {
   }
 };
 
-module.exports = { listPastes, getPaste, createPaste, updatePaste, verifyPastePassword };
+const deletePaste = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const existing = await pool.query('SELECT user_id, content_s3_key FROM pastes WHERE slug = $1', [slug]);
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Paste not found' });
+    }
+    if (existing.rows[0].user_id !== req.user.id) {
+      return res.status(403).json({ success: false, message: 'Not authorized to delete this paste' });
+    }
+
+    const contentKey = existing.rows[0].content_s3_key;
+    if (contentKey) {
+      try {
+        await deleteFromS3(contentKey);
+      } catch (deleteError) {
+        console.error('Delete paste content error:', deleteError);
+      }
+    }
+
+    await pool.query('DELETE FROM pastes WHERE slug = $1', [slug]);
+    res.json({ success: true, message: 'Paste deleted' });
+  } catch (error) {
+    console.error('Delete paste error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+module.exports = { listPastes, getPaste, createPaste, updatePaste, verifyPastePassword, deletePaste };
