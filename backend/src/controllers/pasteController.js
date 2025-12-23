@@ -25,7 +25,7 @@ const getPaste = async (req, res) => {
   try {
     const { slug } = req.params;
     const result = await pool.query(
-      'SELECT p.slug, p.title, p.content, p.content_s3_key, p.created_at, p.updated_at, p.is_public, p.user_id, p.password_hash, u.name as owner_name FROM pastes p JOIN users u ON p.user_id = u.id WHERE p.slug = $1',
+      'SELECT p.slug, p.title, p.content, p.content_s3_key, p.created_at, p.updated_at, p.is_public, p.user_id, p.password_hash, u.name as owner_name, u.profile_photo as owner_photo, u.description as owner_description FROM pastes p JOIN users u ON p.user_id = u.id WHERE p.slug = $1',
       [slug]
     );
 
@@ -63,6 +63,8 @@ const getPaste = async (req, res) => {
         updated_at: paste.updated_at,
         is_owner: isOwner,
         owner_name: paste.owner_name,
+        owner_photo: paste.owner_photo,
+        owner_description: paste.owner_description,
         has_password: !!paste.password_hash
       }
     });
