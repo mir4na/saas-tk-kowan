@@ -42,7 +42,8 @@ const PasswordModal = ({ isOpen, onClose, onSubmit, error }) => {
               color: 'white',
               marginBottom: '20px',
               outline: 'none',
-              transition: 'all 0.3s'
+              transition: 'all 0.3s',
+              boxSizing: 'border-box'
             }}
             onFocus={(e) => e.target.style.borderColor = 'var(--primary-cyan)'}
             onBlur={(e) => e.target.style.borderColor = 'rgba(0, 217, 255, 0.3)'}

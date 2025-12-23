@@ -41,7 +41,8 @@ const SetPasswordModal = ({ isOpen, onClose, onSet }) => {
               borderRadius: '8px',
               color: 'white',
               marginBottom: '20px',
-              outline: 'none'
+              outline: 'none',
+              boxSizing: 'border-box'
             }}
           />
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
