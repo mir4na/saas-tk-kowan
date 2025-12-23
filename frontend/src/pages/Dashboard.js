@@ -14,7 +14,7 @@ const Dashboard = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [charCount, setCharCount] = useState(0);
-  const MAX_CHARS = 1024;
+  const MAX_CHARS = 100000;
 
   const handleContentChange = (e) => {
     const newContent = e.target.value;
