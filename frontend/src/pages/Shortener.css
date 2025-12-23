@@ -32,7 +32,8 @@
 .shortener-container-wrapper {
   display: flex;
   height: calc(100vh - var(--shortener-nav-height));
-  background: linear-gradient(135deg, #0a0a1e 0%, #1a0a2e 100%);
+  /* Background handled by global particles */
+  color: #fff;
   margin-top: var(--shortener-nav-height);
   overflow: hidden;
 }

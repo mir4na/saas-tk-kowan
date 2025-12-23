@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import Modal from '../components/Modal';
+import ParticlesBackground from '../components/ParticlesBackground';
 import './Shortener.css';
 
 function Shortener() {
@@ -244,6 +245,7 @@ function Shortener() {
 
   return (
     <div className="shortener-page">
+      <ParticlesBackground />
       <header className="shortener-topbar">
         <div className="brand-logo">⚡ QUICKCLIP</div>
         <nav className="nav-links">

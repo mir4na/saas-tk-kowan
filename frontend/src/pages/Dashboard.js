@@ -18,10 +18,9 @@ const Dashboard = () => {
 
   const handleContentChange = (e) => {
     const newContent = e.target.value;
-    if (newContent.length <= MAX_CHARS) {
-      setContent(newContent);
-      setCharCount(newContent.length);
-    }
+    const sliced = newContent.slice(0, MAX_CHARS);
+    setContent(sliced);
+    setCharCount(sliced.length);
   };
   const [isPublic, setIsPublic] = useState(true);
   const [password, setPassword] = useState('');
@@ -52,6 +51,7 @@ const Dashboard = () => {
   }, [loadPastes]);
 
   const createPaste = async () => {
+    if (pastes.length >= 10) return;
     setSaving(true);
     try {
       const res = await pasteAPI.create({ title: 'Untitled Paste', content: '', isPublic: true });
@@ -82,8 +82,7 @@ const Dashboard = () => {
 
   const savePaste = useCallback(async (overrides = {}) => {
     if (!selectedPaste) return;
-    
-    // Determine values to save: use overrides if provided, otherwise current state
+
     const nextTitle = overrides.title !== undefined ? overrides.title : title;
     const nextContent = overrides.content !== undefined ? overrides.content : content;
     const nextIsPublic = overrides.isPublic !== undefined ? overrides.isPublic : isPublic;
@@ -93,7 +92,7 @@ const Dashboard = () => {
       setShowSetPasswordModal(true);
       return;
     }
-    
+
     setSaving(true);
     try {
       const res = await pasteAPI.update(selectedPaste.slug, {
@@ -129,11 +128,10 @@ const Dashboard = () => {
     if (!isNowPublic) {
       if (!password && !selectedPaste?.has_password) {
         setShowSetPasswordModal(true);
-        return; 
+        return;
       }
     }
     setIsPublic(isNowPublic);
-    // Auto-save logic for better UX
     await savePaste({ isPublic: isNowPublic });
   };
 
@@ -141,7 +139,6 @@ const Dashboard = () => {
     setPassword(pass);
     setIsPublic(false);
     setShowSetPasswordModal(false);
-    // Immediately sync to database
     await savePaste({ isPublic: false, password: pass });
   };
 
@@ -171,7 +168,7 @@ const Dashboard = () => {
         <aside className="sidebar">
           <div className="sidebar__header">
             <h3>Your pastes</h3>
-            <button className="primary-btn small" onClick={createPaste} disabled={saving}>
+            <button className="primary-btn small" onClick={createPaste} disabled={saving || pastes.length >= 10}>
               + New
             </button>
           </div>
@@ -206,14 +203,19 @@ const Dashboard = () => {
                   placeholder="Paste title"
                 />
                 <div className="editor__controls">
-                  <label className="toggle">
-                    <input
-                      type="checkbox"
-                      checked={isPublic}
-                      onChange={handleTogglePublic}
-                    />
-                    <span>{isPublic ? 'Public' : 'Private'}</span>
-                  </label>
+                  <div
+                    className={`custom-toggle ${isPublic ? 'public' : 'private'}`}
+                    onClick={() => handleTogglePublic({ target: { checked: !isPublic } })}
+                  >
+                    <div className="toggle-track">
+                      <div className="toggle-thumb" />
+                      <div className="toggle-icon">{isPublic ? '🌐' : '🔒'}</div>
+                    </div>
+                    <div className="toggle-label">{isPublic ? 'Public' : 'Private'}</div>
+                    <div className="toggle-tooltip">
+                      Switch to {isPublic ? 'Private' : 'Public'}
+                    </div>
+                  </div>
                   {!isPublic && (
                     <input
                       type="password"
@@ -232,7 +234,7 @@ const Dashboard = () => {
                       }}
                     />
                   )}
-                  <button className="ghost" onClick={() => copyLink(selectedPaste.slug)}>Share link</button>
+
                   <button className="primary-btn" onClick={savePaste} disabled={saving || !dirty}>
                     {saving ? 'Saving…' : dirty ? 'Save changes' : 'Saved'}
                   </button>
