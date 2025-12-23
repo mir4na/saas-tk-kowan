@@ -36,6 +36,13 @@ const Profile = () => {
   }, [id, user]);
 
   useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
+  useEffect(() => {
     if (!isOwnProfile) return;
     setDisplayName(user?.name || '');
     setDescription(user?.description || '');

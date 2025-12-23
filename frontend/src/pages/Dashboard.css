@@ -1,4 +1,4 @@
-g.dashboard {
+.dashboard {
   height: 100vh;
   overflow: hidden;
   /* Background handled by body::before/after in index.css, just need transparency */

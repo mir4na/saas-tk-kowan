@@ -1,7 +1,13 @@
 .shortener-page {
   --shortener-nav-height: 80px;
-  min-height: 100vh;
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
 }
 
 .shortener-topbar {
@@ -25,9 +31,10 @@
 
 .shortener-container-wrapper {
   display: flex;
-  min-height: 100vh;
+  height: calc(100vh - var(--shortener-nav-height));
   background: linear-gradient(135deg, #0a0a1e 0%, #1a0a2e 100%);
-  padding-top: var(--shortener-nav-height);
+  margin-top: var(--shortener-nav-height);
+  overflow: hidden;
 }
 
 .shortener-sidebar {
@@ -36,10 +43,8 @@
   background: rgba(10, 10, 30, 0.95);
   border-right: 1px solid rgba(0, 243, 255, 0.2);
   padding: 16px;
-  overflow-y: hidden;
-  height: calc(100vh - var(--shortener-nav-height));
-  position: sticky;
-  top: var(--shortener-nav-height);
+  overflow-y: auto;
+  height: 100%;
 }
 
 .sidebar-card {
@@ -55,6 +60,8 @@
   justify-content: center;
   align-items: flex-start;
   padding: 20px 24px 24px;
+  overflow-y: auto;
+  height: 100%;
 }
 
 .glass-card {

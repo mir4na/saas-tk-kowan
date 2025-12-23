@@ -38,7 +38,9 @@ function Shortener() {
   const remainingSlots = Math.max(0, maxUrls - urls.length);
 
   useEffect(() => {
+    document.body.style.overflow = 'hidden';
     return () => {
+      document.body.style.overflow = '';
       if (copyTimeoutRef.current) {
         clearTimeout(copyTimeoutRef.current);
       }
