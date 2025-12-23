@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import './ResourcesNotFound.css';
 
 const ResourcesNotFound = () => (
-  <div className="full-center">
+  <div className="full-center resources-not-found-page">
     <div style={{ textAlign: 'center' }}>
       <h2>Resource not found</h2>
       <p className="muted">The item you are looking for does not exist.</p>

@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { profileAPI } from '../services/api';
 import Modal from '../components/Modal';
 import getCroppedImg from '../utils/cropImage';
+import ParticlesBg from '../components/ParticlesBg';
 import './Profile.css';
 
 const Profile = () => {
@@ -135,7 +136,9 @@ const Profile = () => {
 
   return (
     <div className="profile-page">
+      <ParticlesBg />
       <header className="profile-topbar">
+
         <div className="brand-logo">⚡ QUICKCLIP</div>
         <nav className="nav-links">
           <Link to="/" className="app-nav-link">Home</Link>

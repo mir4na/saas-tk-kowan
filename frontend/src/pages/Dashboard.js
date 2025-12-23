@@ -31,6 +31,7 @@ const Dashboard = () => {
   const [showSetPasswordModal, setShowSetPasswordModal] = useState(false);
   const [showFeatureModal, setShowFeatureModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showLimitModal, setShowLimitModal] = useState(false);
 
   const loadPastes = useCallback(async () => {
     try {
@@ -53,6 +54,10 @@ const Dashboard = () => {
   }, [loadPastes]);
 
   const createPaste = async () => {
+    if (pastes.length >= 10) {
+      setShowLimitModal(true);
+      return;
+    }
     setSaving(true);
     try {
       const res = await pasteAPI.create({ title: 'Untitled Paste', content: '', isPublic: true });
@@ -236,42 +241,34 @@ const Dashboard = () => {
                   placeholder="Paste title"
                 />
                 <div className="editor__controls">
-                  <label className="toggle">
-                    <input
-                      type="checkbox"
-                      checked={isPublic}
-                      onChange={handleTogglePublic}
-                    />
-                    <span>{isPublic ? 'Public' : 'Private'}</span>
-                  </label>
-                  {!isPublic && (
-                    <input
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Set password (required for private)"
-                      style={{
-                        padding: '8px 12px',
-                        fontSize: '0.9rem',
-                        background: 'rgba(0, 0, 0, 0.3)',
-                        border: '1px solid rgba(0, 217, 255, 0.3)',
-                        borderRadius: '8px',
-                        color: 'white',
-                        outline: 'none',
-                        minWidth: '200px'
-                      }}
-                    />
-                  )}
-                  <button className="ghost" onClick={() => copyLink(selectedPaste.slug)}>Share link</button>
-                  <button className="ghost" onClick={() => setShowDeleteModal(true)} disabled={saving}>
-                    Delete
-                  </button>
-                  <button className="primary-btn" onClick={savePaste} disabled={saving || !dirty}>
-                    {saving ? 'Saving…' : dirty ? 'Save changes' : 'Saved'}
-                  </button>
-                  <span className="muted small">
-                    {saving ? 'Saving…' : lastSaved ? `Saved at ${lastSaved.toLocaleTimeString()}` : dirty ? 'Unsaved changes' : 'Up to date'}
-                  </span>
+                  <div className="controls-actions">
+                    <div className="toggle-switch-wrapper" onClick={() => handleTogglePublic({ target: { checked: !isPublic } })}>
+                       <div className={`toggle-switch ${isPublic ? 'active' : ''}`}>
+                         <div className="toggle-knob"></div>
+                       </div>
+                       <span className="toggle-label">{isPublic ? 'Public' : 'Private'}</span>
+                    </div>
+
+                    <button 
+                      className="ghost change-pass-btn" 
+                      onClick={() => setShowSetPasswordModal(true)}
+                    >
+                      Change Password
+                    </button>
+
+                    <button className="ghost danger-btn" onClick={() => setShowDeleteModal(true)} disabled={saving}>
+                      Delete
+                    </button>
+                  </div>
+
+                  <div className="controls-save-section">
+                     <button className="primary-btn save-btn" onClick={savePaste} disabled={saving || !dirty}>
+                       {saving ? 'SAVING…' : dirty ? 'SAVE CHANGES' : 'SAVED'}
+                     </button>
+                     <div className="editor__status">
+                       {saving ? 'Saving changes…' : lastSaved ? `Last saved at ${lastSaved.toLocaleTimeString()}` : dirty ? 'Unsaved changes' : 'All changes saved'}
+                     </div>
+                  </div>
                 </div>
               </div>
               <textarea
@@ -301,7 +298,14 @@ const Dashboard = () => {
         isOpen={showSetPasswordModal}
         onClose={() => setShowSetPasswordModal(false)}
         onSet={handleSetPassword}
+        hasPassword={selectedPaste?.has_password || !!password}
       />
+      <Modal isOpen={showLimitModal} onClose={() => setShowLimitModal(false)}>
+        <div className="feature-selection">
+          <h2>Limit Reached</h2>
+          <p>You can only create up to 10 pastebins.</p>
+        </div>
+      </Modal>
       <Modal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
         <div className="feature-selection">
           <h2>Delete paste?</h2>
@@ -310,7 +314,7 @@ const Dashboard = () => {
             <button className="ghost" onClick={() => setShowDeleteModal(false)} disabled={saving}>
               Cancel
             </button>
-            <button className="primary-btn" onClick={deleteSelectedPaste} disabled={saving}>
+            <button className="primary-btn danger-btn-filled" onClick={deleteSelectedPaste} disabled={saving}>
               {saving ? 'Deleting…' : 'Delete'}
             </button>
           </div>
