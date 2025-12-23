@@ -1,10 +1,12 @@
-.dashboard {
-  min-height: 100vh;
+g.dashboard {
+  height: 100vh;
+  overflow: hidden;
   /* Background handled by body::before/after in index.css, just need transparency */
   background: transparent;
   color: var(--text-color);
   --dashboard-nav-height: 80px;
   padding-top: var(--dashboard-nav-height);
+  box-sizing: border-box;
 }
 
 .dashboard-topbar {
@@ -101,8 +103,8 @@
 .layout {
   display: grid;
   grid-template-columns: 280px 1fr;
-  height: calc(100vh - var(--dashboard-nav-height)); /* Fixed height */
-  overflow: hidden; /* Prevent body scroll */
+  height: calc(100vh - var(--dashboard-nav-height));
+  overflow: hidden;
 }
 
 .sidebar {
@@ -110,7 +112,7 @@
   padding: 16px;
   background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(5px);
-  overflow-y: auto; /* Scrollable sidebar */
+  overflow-y: auto;
 }
 
 .sidebar__header {
@@ -201,15 +203,17 @@
   max-width: 900px; /* Constrain width to make it more box-like */
   height: calc(100vh - 200px); /* Adjust height to fit screen */
   min-height: 400px;
+  flex: 1;
   padding: 20px;
   border-radius: 15px;
   background: rgba(0, 0, 0, 0.3);
   color: #fff;
   border: 1px solid var(--glass-border);
-  resize: none; /* Disable manual resize */
+  resize: none;
   font-family: 'Fira Code', monospace;
   font-size: 14px;
   line-height: 1.6;
+  box-sizing: border-box;
 }
 
 .editor__textarea:focus {
