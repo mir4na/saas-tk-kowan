@@ -263,7 +263,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="editor__status">
-                      {saving ? 'Saving changes…' : lastSaved ? `Last saved at ${lastSaved.toLocaleTimeString()}` : 'Auto-save enabled'}
+                      {saving ? 'Saving changes…' : lastSaved ? `Last saved at ${lastSaved.toLocaleTimeString()}` : 'All changes auto-saved'}
                 </div>
               </div>
               <textarea
