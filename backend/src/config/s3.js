@@ -43,4 +43,20 @@ const getSignedUrlForObject = async (key, expiresIn = 86400) => {
   return await getSignedUrl(s3Client, command, { expiresIn });
 };
 
-module.exports = { s3Client, bucketName, uploadToS3, deleteFromS3, getSignedUrlForObject };
+const streamToString = (stream) => new Promise((resolve, reject) => {
+  const chunks = [];
+  stream.on('data', (chunk) => chunks.push(chunk));
+  stream.on('error', reject);
+  stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+});
+
+const getObjectText = async (key) => {
+  const command = new GetObjectCommand({
+    Bucket: bucketName,
+    Key: key
+  });
+  const response = await s3Client.send(command);
+  return streamToString(response.Body);
+};
+
+module.exports = { s3Client, bucketName, uploadToS3, deleteFromS3, getSignedUrlForObject, getObjectText };

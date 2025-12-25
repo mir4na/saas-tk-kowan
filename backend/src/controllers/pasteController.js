@@ -1,8 +1,11 @@
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const pool = require('../config/database');
+const { uploadToS3, deleteFromS3, getObjectText } = require('../config/s3');
 
 const generateSlug = () => crypto.randomBytes(6).toString('base64url').slice(0, 10);
+const buildPasteKey = (slug) => `pastes/${slug}.txt`;
+const S3_THRESHOLD = 50000;
 
 const listPastes = async (req, res) => {
   try {
@@ -22,7 +25,7 @@ const getPaste = async (req, res) => {
   try {
     const { slug } = req.params;
     const result = await pool.query(
-      'SELECT slug, title, content, created_at, updated_at, is_public, user_id, password_hash FROM pastes WHERE slug = $1',
+      'SELECT p.slug, p.title, p.content, p.content_s3_key, p.created_at, p.updated_at, p.is_public, p.user_id, p.password_hash, u.name as owner_name, u.profile_photo as owner_photo, u.description as owner_description FROM pastes p JOIN users u ON p.user_id = u.id WHERE p.slug = $1',
       [slug]
     );
 
@@ -35,7 +38,19 @@ const getPaste = async (req, res) => {
 
     if (!paste.is_public && !isOwner) {
       if (paste.password_hash) {
-        return res.status(403).json({ success: false, message: 'Password required', requiresPassword: true });
+        return res.status(403).json({
+          success: false,
+          message: 'Password required',
+          requiresPassword: true,
+          data: {
+            slug: paste.slug,
+            title: paste.title,
+            created_at: paste.created_at,
+            owner_name: paste.owner_name,
+            owner_photo: paste.owner_photo,
+            owner_description: paste.owner_description
+          }
+        });
       }
       return res.status(403).json({ success: false, message: 'Private paste' });
     }
@@ -44,16 +59,24 @@ const getPaste = async (req, res) => {
     res.set('Pragma', 'no-cache');
     res.set('Expires', '0');
 
+    let content = paste.content;
+    if ((!content || content.length === 0) && paste.content_s3_key) {
+      content = await getObjectText(paste.content_s3_key);
+    }
+
     res.json({
       success: true,
       data: {
         slug: paste.slug,
         title: paste.title,
-        content: paste.content,
+        content,
         is_public: paste.is_public,
         created_at: paste.created_at,
         updated_at: paste.updated_at,
         is_owner: isOwner,
+        owner_name: paste.owner_name,
+        owner_photo: paste.owner_photo,
+        owner_description: paste.owner_description,
         has_password: !!paste.password_hash
       }
     });
@@ -73,7 +96,7 @@ const verifyPastePassword = async (req, res) => {
     }
 
     const result = await pool.query(
-      'SELECT slug, title, content, created_at, updated_at, is_public, user_id, password_hash FROM pastes WHERE slug = $1',
+      'SELECT slug, title, content, content_s3_key, created_at, updated_at, is_public, user_id, password_hash FROM pastes WHERE slug = $1',
       [slug]
     );
 
@@ -93,12 +116,17 @@ const verifyPastePassword = async (req, res) => {
       return res.status(401).json({ success: false, message: 'Incorrect password' });
     }
 
+    let content = paste.content;
+    if ((!content || content.length === 0) && paste.content_s3_key) {
+      content = await getObjectText(paste.content_s3_key);
+    }
+
     res.json({
       success: true,
       data: {
         slug: paste.slug,
         title: paste.title,
-        content: paste.content,
+        content,
         is_public: paste.is_public,
         created_at: paste.created_at,
         updated_at: paste.updated_at,
@@ -122,9 +150,20 @@ const createPaste = async (req, res) => {
       passwordHash = await bcrypt.hash(password, 10);
     }
 
+    const contentValue = content || '';
+    const useS3 = contentValue.length > S3_THRESHOLD;
+    let contentKey = null;
+    let contentToStore = contentValue;
+
+    if (useS3) {
+      contentKey = buildPasteKey(slug);
+      await uploadToS3(contentKey, Buffer.from(contentValue, 'utf8'), 'text/plain; charset=utf-8');
+      contentToStore = '';
+    }
+
     const result = await pool.query(
-      'INSERT INTO pastes (slug, title, content, is_public, password_hash, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING slug, title, content, is_public, created_at, updated_at',
-      [slug, title || 'Untitled Paste', content || '', isPublic !== false, passwordHash, req.user.id]
+      'INSERT INTO pastes (slug, title, content, content_s3_key, is_public, password_hash, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING slug, title, content, is_public, created_at, updated_at',
+      [slug, title || 'Untitled Paste', contentToStore, contentKey, isPublic !== false, passwordHash, req.user.id]
     );
 
     const pasteData = { ...result.rows[0], has_password: !!passwordHash };
@@ -140,7 +179,7 @@ const updatePaste = async (req, res) => {
     const { slug } = req.params;
     const { title, content, isPublic, password } = req.body;
 
-    const existing = await pool.query('SELECT user_id, password_hash FROM pastes WHERE slug = $1', [slug]);
+    const existing = await pool.query('SELECT user_id, password_hash, content_s3_key FROM pastes WHERE slug = $1', [slug]);
     if (existing.rows.length === 0) {
       return res.status(404).json({ success: false, message: 'Paste not found' });
     }
@@ -157,9 +196,27 @@ const updatePaste = async (req, res) => {
       }
     }
 
+    const contentValue = content || '';
+    const useS3 = contentValue.length > S3_THRESHOLD;
+    let contentKey = existing.rows[0].content_s3_key || null;
+    let contentToStore = contentValue;
+
+    if (useS3) {
+      contentKey = contentKey || buildPasteKey(slug);
+      await uploadToS3(contentKey, Buffer.from(contentValue, 'utf8'), 'text/plain; charset=utf-8');
+      contentToStore = '';
+    } else if (contentKey) {
+      try {
+        await deleteFromS3(contentKey);
+      } catch (deleteError) {
+        console.error('Delete paste content error:', deleteError);
+      }
+      contentKey = null;
+    }
+
     const result = await pool.query(
-      'UPDATE pastes SET title = $1, content = $2, is_public = $3, password_hash = $4 WHERE slug = $5 RETURNING slug, title, content, is_public, created_at, updated_at',
-      [title || 'Untitled Paste', content || '', isPublic !== false, passwordHash, slug]
+      'UPDATE pastes SET title = $1, content = $2, content_s3_key = $3, is_public = $4, password_hash = $5 WHERE slug = $6 RETURNING slug, title, content, is_public, created_at, updated_at',
+      [title || 'Untitled Paste', contentToStore, contentKey, isPublic !== false, passwordHash, slug]
     );
 
     const pasteData = { ...result.rows[0], has_password: !!passwordHash };
@@ -170,4 +227,32 @@ const updatePaste = async (req, res) => {
   }
 };
 
-module.exports = { listPastes, getPaste, createPaste, updatePaste, verifyPastePassword };
+const deletePaste = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const existing = await pool.query('SELECT user_id, content_s3_key FROM pastes WHERE slug = $1', [slug]);
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Paste not found' });
+    }
+    if (existing.rows[0].user_id !== req.user.id) {
+      return res.status(403).json({ success: false, message: 'Not authorized to delete this paste' });
+    }
+
+    const contentKey = existing.rows[0].content_s3_key;
+    if (contentKey) {
+      try {
+        await deleteFromS3(contentKey);
+      } catch (deleteError) {
+        console.error('Delete paste content error:', deleteError);
+      }
+    }
+
+    await pool.query('DELETE FROM pastes WHERE slug = $1', [slug]);
+    res.json({ success: true, message: 'Paste deleted' });
+  } catch (error) {
+    console.error('Delete paste error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+module.exports = { listPastes, getPaste, createPaste, updatePaste, verifyPastePassword, deletePaste };

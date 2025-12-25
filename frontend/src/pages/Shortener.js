@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import Modal from '../components/Modal';
+import ParticlesBg from '../components/ParticlesBg';
 import './Shortener.css';
 
 function Shortener() {
@@ -38,7 +39,9 @@ function Shortener() {
   const remainingSlots = Math.max(0, maxUrls - urls.length);
 
   useEffect(() => {
+    document.body.style.overflow = 'hidden';
     return () => {
+      document.body.style.overflow = '';
       if (copyTimeoutRef.current) {
         clearTimeout(copyTimeoutRef.current);
       }
@@ -242,6 +245,7 @@ function Shortener() {
 
   return (
     <div className="shortener-page">
+      <ParticlesBg />
       <header className="shortener-topbar">
         <div className="brand-logo">⚡ QUICKCLIP</div>
         <nav className="nav-links">

@@ -1,10 +1,12 @@
 .dashboard {
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   /* Background handled by body::before/after in index.css, just need transparency */
   background: transparent;
   color: var(--text-color);
   --dashboard-nav-height: 80px;
   padding-top: var(--dashboard-nav-height);
+  box-sizing: border-box;
 }
 
 .dashboard-topbar {
@@ -101,7 +103,8 @@
 .layout {
   display: grid;
   grid-template-columns: 280px 1fr;
-  min-height: calc(100vh - var(--dashboard-nav-height));
+  height: calc(100vh - var(--dashboard-nav-height));
+  overflow: hidden;
 }
 
 .sidebar {
@@ -109,6 +112,9 @@
   padding: 16px;
   background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(5px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .sidebar__header {
@@ -122,6 +128,10 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  flex: 1;
+  overflow-y: auto;
+  /* Hide scrollbar for cleaner look */
+  scrollbar-width: none;
 }
 
 .list-item {
@@ -147,6 +157,10 @@
 
 .editor {
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content horizontally */
+  overflow-y: auto; /* Allow scrolling content if needed, though goal is single screen */
 }
 
 .editor__header {
@@ -156,6 +170,8 @@
   align-items: center;
   margin-bottom: 20px;
   flex-wrap: wrap;
+  width: 100%;
+  max-width: 900px; /* Constrain width */
 }
 
 .title-input {
@@ -178,28 +194,133 @@
 .editor__controls {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
+}
+
+.controls-actions {
+  display: flex;
+  align-items: center;
   gap: 12px;
 }
 
-.toggle {
+.editor__status {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 8px;
+  text-align: right;
+  width: 100%;
+  max-width: 900px;
+}
+
+/* Toggle Switch Style */
+.toggle-switch-wrapper {
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
+  margin-right: 8px; /* Extra separation from buttons */
+}
+
+.toggle-switch {
+  width: 44px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  position: relative;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.toggle-switch.active {
+  background: var(--primary-cyan);
+  border-color: var(--primary-cyan);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+.toggle-knob {
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toggle-switch.active .toggle-knob {
+  transform: translateX(20px);
+}
+
+.toggle-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.danger-btn {
+  color: #ff4757;
+  border-color: rgba(255, 71, 87, 0.3);
+}
+
+.danger-btn:hover {
+  background: rgba(255, 71, 87, 0.1);
+  color: #ff6b81;
+  border-color: #ff6b81;
+}
+
+.danger-btn-filled {
+  background: #ff4757;
+  border-color: #ff4757;
+  color: white;
+  transition: all 0.2s;
+}
+
+.danger-btn-filled:hover {
+  background: #ff6b81;
+  border-color: #ff6b81;
+  box-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
+  color: white;
+}
+
+.change-pass-btn {
+  font-size: 0.9rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .editor__textarea {
   width: 100%;
-  min-height: 70vh;
+  max-width: 900px; /* Constrain width to make it more box-like */
+  height: calc(100vh - 200px); /* Adjust height to fit screen */
+  min-height: 400px;
+  flex: 1;
   padding: 20px;
   border-radius: 15px;
   background: rgba(0, 0, 0, 0.3);
   color: #fff;
   border: 1px solid var(--glass-border);
-  resize: vertical;
+  resize: none;
   font-family: 'Fira Code', monospace;
   font-size: 14px;
   line-height: 1.6;
+  box-sizing: border-box;
 }
 
 .editor__textarea:focus {
@@ -210,7 +331,9 @@
 .empty-state {
   display: grid;
   place-items: center;
-  height: 70vh;
+  height: 100%; /* Fill available space */
+  width: 100%;
+  max-width: 900px;
   color: rgba(255,255,255,0.4);
   border: 2px dashed rgba(255,255,255,0.1);
   border-radius: 20px;

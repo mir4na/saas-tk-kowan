@@ -4,6 +4,30 @@ const { nanoid } = require('nanoid');
 const pool = require('../config/database');
 const { authenticate: auth } = require('../middleware/auth');
 
+router.get('/resolve/:code', async (req, res) => {
+  try {
+    const { code } = req.params;
+    const result = await pool.query(
+      'UPDATE short_urls SET clicks = clicks + 1 WHERE short_code = $1 RETURNING original_url',
+      [code]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Short URL not found' });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        original_url: result.rows[0].original_url
+      }
+    });
+  } catch (error) {
+    console.error('Error resolving short URL:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 router.post('/', auth, async (req, res) => {
   try {
     const { originalUrl, name } = req.body;

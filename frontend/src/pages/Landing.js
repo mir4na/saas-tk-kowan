@@ -2,27 +2,16 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Modal from '../components/Modal';
+import ParticlesBg from '../components/ParticlesBg';
 import './Landing.css';
 
 const Landing = () => {
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
-  const [particles, setParticles] = useState([]);
   const [showFeatureModal, setShowFeatureModal] = useState(false);
   const carouselRef = useRef(null);
   const hasCenteredRef = useRef(false);
   const animationRef = useRef(null);
-
-  useEffect(() => {
-    const newParticles = Array.from({ length: 50 }, (_, i) => ({
-      id: i,
-      size: Math.random() * 4 + 1,
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      delay: Math.random() * 20,
-    }));
-    setParticles(newParticles);
-  }, []);
 
   const handleGetStarted = () => {
     if (isAuthenticated) {
@@ -156,21 +145,7 @@ const Landing = () => {
 
   return (
     <div className="landing-page">
-      <div className="particles-bg">
-        {particles.map(p => (
-          <div
-            key={p.id}
-            className="particle"
-            style={{
-              width: `${p.size}px`,
-              height: `${p.size}px`,
-              left: `${p.left}%`,
-              top: `${p.top}%`,
-              animationDelay: `${p.delay}s`,
-            }}
-          />
-        ))}
-      </div>
+      <ParticlesBg />
 
       <header className="landing-header">
         <div className="brand-logo">⚡ QUICKCLIP</div>

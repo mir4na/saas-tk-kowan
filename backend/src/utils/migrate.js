@@ -53,6 +53,7 @@ const migrate = async () => {
         slug VARCHAR(16) UNIQUE NOT NULL,
         title VARCHAR(255) DEFAULT 'Untitled Paste',
         content TEXT DEFAULT '',
+        content_s3_key VARCHAR(500),
         is_public BOOLEAN DEFAULT TRUE,
         password_hash TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -77,6 +78,11 @@ const migrate = async () => {
     await pool.query(`
       ALTER TABLE short_urls
       ADD COLUMN IF NOT EXISTS name VARCHAR(30);
+    `);
+
+    await pool.query(`
+      ALTER TABLE users
+      ADD COLUMN IF NOT EXISTS description VARCHAR(60);
     `);
 
     await pool.query(`

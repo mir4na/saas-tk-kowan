@@ -42,7 +42,8 @@ export const pasteAPI = {
   get: (slug) => api.get(`/pastes/${slug}`),
   create: (data) => api.post('/pastes', data),
   update: (slug, data) => api.put(`/pastes/${slug}`, data),
-  verifyPassword: (slug, password) => api.post(`/pastes/${slug}/verify`, { password })
+  verifyPassword: (slug, password) => api.post(`/pastes/${slug}/verify`, { password }),
+  remove: (slug) => api.delete(`/pastes/${slug}`)
 };
 
 export default api;
