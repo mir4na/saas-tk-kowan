@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: quickclip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox:1.28
+        command: ['sh', '-c', 'until nc -z postgres 5432; do echo waiting for postgres; sleep 2; done;']
+      containers:
+      - name: backend
+        image: quickclip-backend:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5000
+        env:
+        - name: NODE_ENV
+          value: production
+        - name: PORT
+          value: "5000"
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: DB_NAME
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: DB_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: DB_PASSWORD
+        - name: DATABASE_URL
+          value: postgresql://$(DB_USER):$(DB_PASSWORD)@postgres:5432/$(DB_NAME)
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: JWT_SECRET
+        - name: JWT_EXPIRE
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: JWT_EXPIRE
+        - name: CORS_ORIGIN
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: CORS_ORIGIN
+        - name: AWS_REGION
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: AWS_REGION
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: AWS_SECRET_ACCESS_KEY
+        - name: AWS_SESSION_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: AWS_SESSION_TOKEN
+        - name: AWS_S3_BUCKET
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: AWS_S3_BUCKET
+        - name: RP_NAME
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: RP_NAME
+        - name: RP_ID
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: RP_ID
+        - name: ORIGIN
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: ORIGIN
+        command: ["/bin/sh"]
+        args: ["-c", "sleep 10 && node src/utils/migrate.js && npm start"]

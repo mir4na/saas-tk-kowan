@@ -56,5 +56,6 @@ docker-compose.override.yml
 # Production outputs
 /frontend/build
 /backend/dist
-/k8s/*.yaml
-/k8s/*.yml
+# Kubernetes secrets (template is tracked)
+k8s/02-secrets.yaml
+!k8s/02-secrets.yaml.example
