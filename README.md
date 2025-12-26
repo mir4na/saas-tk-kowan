@@ -79,23 +79,24 @@ Open **http://localhost** in your browser.
 
 ---
 
-## Production Deployment (Kubernetes)
+## Production Deployment (Kubernetes + Cloudflare)
 
-This guide covers deploying QuickClip to AWS EC2 using Minikube, with DuckDNS for DNS and Caddy for automatic HTTPS.
+This guide covers deploying QuickClip to AWS EC2 using Minikube for Kubernetes, Caddy for origin SSL, and Cloudflare for CDN/security.
 
 ### Architecture
 
 ```
-Internet → DuckDNS → EC2 (Caddy:443) → Minikube → NGINX → Frontend/Backend → PostgreSQL
-                                                                    ↓
-                                                                 AWS S3
+Internet → Cloudflare (CDN/WAF/SSL) → EC2 (Caddy:443) → Minikube → NGINX → Frontend/Backend → PostgreSQL
+                                                                                    ↓
+                                                                                 AWS S3
 ```
 
 ### Prerequisites
 
 - AWS EC2 instance (Ubuntu 22.04, t3.medium or larger)
 - Elastic IP associated with EC2
-- DuckDNS domain pointing to EC2 IP
+- Custom domain with access to change nameservers
+- Cloudflare account (free tier)
 - AWS S3 bucket for storage
 
 ---
@@ -178,8 +179,8 @@ nano 02-secrets.yaml
 Update with your actual values:
 - `DB_PASSWORD`: Secure database password
 - `JWT_SECRET`: Random string for JWT signing
-- `ORIGIN`: `https://yourdomain.duckdns.org`
-- `RP_ID`: `yourdomain.duckdns.org`
+- `ORIGIN`: `https://yourdomain.com`
+- `RP_ID`: `yourdomain.com`
 - `AWS_*`: Your AWS credentials
 - `AWS_S3_BUCKET`: Your S3 bucket name
 
@@ -209,7 +210,56 @@ kubectl get pods -n quickclip
 
 ---
 
-### Step 7: Configure Caddy
+### Step 7: Setup Cloudflare
+
+#### 7.1 Add Domain to Cloudflare
+1. Create a [Cloudflare account](https://cloudflare.com) (free tier)
+2. Click **Add a Site** and enter your domain
+3. Select the **Free** plan
+
+#### 7.2 Configure DNS
+Add an A record pointing to your EC2 Elastic IP:
+
+| Type | Name | Content | Proxy |
+|------|------|---------|-------|
+| A | `@` or subdomain | `<YOUR_EC2_ELASTIC_IP>` | ☁️ Proxied (orange) |
+
+#### 7.3 Update Nameservers
+1. Cloudflare will provide two nameservers (e.g., `ada.ns.cloudflare.com`)
+2. Go to your domain registrar and replace existing nameservers with Cloudflare's
+3. Wait for propagation (5 minutes to 24 hours)
+
+#### 7.4 Generate Origin Certificate
+1. In Cloudflare → **SSL/TLS** → **Origin Server**
+2. Click **Create Certificate**
+3. Keep defaults (15 years validity)
+4. Copy the **Certificate** and **Private Key**
+
+#### 7.5 Install Origin Certificate on EC2
+```bash
+# Save certificate
+sudo nano /etc/ssl/cloudflare-origin.pem
+# Paste the certificate content
+
+# Save private key
+sudo nano /etc/ssl/cloudflare-origin.key
+# Paste the private key content
+```
+
+#### 7.6 Configure SSL/TLS Settings
+In Cloudflare Dashboard → **SSL/TLS**:
+- **Overview**: Set to **Full (Strict)**
+- **Edge Certificates**: Enable **Always Use HTTPS**
+- **Edge Certificates**: Enable **Automatic HTTPS Rewrites**
+
+#### 7.7 Enable Security Features
+- **Security** → **Bots**: Enable **Bot Fight Mode**
+- **Security** → **Settings**: Keep Security Level at **Medium**
+- **Security** → **Security Rules**: (Optional) Add rate limiting rule for `/api/auth`
+
+---
+
+### Step 8: Configure Caddy with Origin Certificate
 
 ```bash
 # Get Minikube IP
@@ -219,9 +269,10 @@ minikube ip
 sudo nano /etc/caddy/Caddyfile
 ```
 
-Add:
+Add (replace with your domain and Minikube IP):
 ```
-yourdomain.duckdns.org {
+yourdomain.com {
+    tls /etc/ssl/cloudflare-origin.pem /etc/ssl/cloudflare-origin.key
     reverse_proxy <MINIKUBE_IP>:30080
 }
 ```
@@ -232,11 +283,18 @@ sudo systemctl restart caddy
 
 ---
 
-### Step 8: Verify
+### Step 9: Verify Deployment
 
 ```bash
-curl https://yourdomain.duckdns.org/api/health
+# Check Cloudflare headers
+curl -I https://yourdomain.com 2>/dev/null | grep -E "cf-ray|server"
+
+# Should show:
+# server: cloudflare
+# cf-ray: xxxxxxxxx
 ```
+
+Open `https://yourdomain.com` in your browser - you should see the QuickClip landing page with a valid SSL certificate.
 
 ---
 
