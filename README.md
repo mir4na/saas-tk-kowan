@@ -142,11 +142,11 @@ kubectl get nodes
 
 ---
 
-### Step 3: Transfer Files to EC2
+### Step 3: Clone the Repository
 
-From your local machine:
 ```bash
-scp -r -i your-key.pem ./saas-tk-kowan ubuntu@<EC2_IP>:~/
+cd ~
+git clone https://github.com/mir4na/saas-tk-kowan.git
 ```
 
 ---
