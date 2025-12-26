@@ -24,8 +24,9 @@ Built with React, Node.js, PostgreSQL, and AWS S3, deployed on Kubernetes.
 | Database | PostgreSQL 14 |
 | Storage | AWS S3 |
 | Auth | WebAuthn (SimpleWebAuthn) |
-| Orchestration | Kubernetes / Docker Compose |
-| Reverse Proxy | NGINX |
+| Orchestration | Kubernetes (Minikube) / Docker Compose |
+| Reverse Proxy | NGINX, Caddy |
+| CDN / Security | Cloudflare (WAF, DDoS, SSL) |
 
 ---
 
