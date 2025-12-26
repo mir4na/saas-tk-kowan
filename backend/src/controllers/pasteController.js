@@ -1,11 +1,18 @@
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const pool = require('../config/database');
-const { uploadToS3, deleteFromS3, getObjectText } = require('../config/s3');
+const { uploadToS3, deleteFromS3, getObjectText, getSignedUrlForObject } = require('../config/s3');
 
 const generateSlug = () => crypto.randomBytes(6).toString('base64url').slice(0, 10);
 const buildPasteKey = (slug) => `pastes/${slug}.txt`;
 const S3_THRESHOLD = 50000;
+
+const getOwnerPhotoUrl = async (photo) => {
+  if (photo && photo.startsWith('profiles/')) {
+    return await getSignedUrlForObject(photo, 86400);
+  }
+  return photo;
+};
 
 const listPastes = async (req, res) => {
   try {
@@ -36,6 +43,9 @@ const getPaste = async (req, res) => {
     const paste = result.rows[0];
     const isOwner = req.user?.id === paste.user_id;
 
+    // Generate signed URL for owner's profile photo
+    const ownerPhotoUrl = await getOwnerPhotoUrl(paste.owner_photo);
+
     if (!paste.is_public && !isOwner) {
       if (paste.password_hash) {
         return res.status(403).json({
@@ -47,7 +57,7 @@ const getPaste = async (req, res) => {
             title: paste.title,
             created_at: paste.created_at,
             owner_name: paste.owner_name,
-            owner_photo: paste.owner_photo,
+            owner_photo: ownerPhotoUrl,
             owner_description: paste.owner_description
           }
         });
@@ -75,7 +85,7 @@ const getPaste = async (req, res) => {
         updated_at: paste.updated_at,
         is_owner: isOwner,
         owner_name: paste.owner_name,
-        owner_photo: paste.owner_photo,
+        owner_photo: ownerPhotoUrl,
         owner_description: paste.owner_description,
         has_password: !!paste.password_hash
       }
